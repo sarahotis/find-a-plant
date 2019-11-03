@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">FindAPlant</string>
     <string name="title_activity_maps">BasicPlantMap</string>
+    <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
+    <string name="no_location">This app needs access to your device location to continue!</string>
 </resources>
