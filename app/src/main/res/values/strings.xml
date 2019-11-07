@@ -9,4 +9,5 @@
     <string name="plant_description">Add description (optional)</string>
     <string name="user_input_desc">Enter additional information…</string>
     <string name="report_plant">Report Plant!</string>
+    <string name="description_plant">Description</string>
 </resources>
