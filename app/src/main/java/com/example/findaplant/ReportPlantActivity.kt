@@ -27,15 +27,6 @@ class ReportPlantActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissions()
-        reportImageView = findViewById(R.id.reportImageView)
-        helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
-        reportPlantButton = findViewById(R.id.reportPlantButton)
-
-        // Set stroke (border) and body color of button
-        //android:color="#FCB97D"
-        setStrokes(helpIdentifyButton, "#FCB97D")
-        setStrokes(reportPlantButton, "#FCB97D")
-                //drawable.setColor(Color.parseColor("#66FCB97D"))s
     }
 
     private fun requestPermissions() {
@@ -56,6 +47,13 @@ class ReportPlantActivity : AppCompatActivity() {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     setContentView(R.layout.report_plant_layout)
+                    reportImageView = findViewById(R.id.reportImageView)
+                    helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
+                    reportPlantButton = findViewById(R.id.reportPlantButton)
+
+                    // Set stroke (border) and body color of button
+                    setStrokes(helpIdentifyButton, "#FCB97D")
+                    setStrokes(reportPlantButton, "#FCB97D")
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -83,6 +81,14 @@ class ReportPlantActivity : AppCompatActivity() {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
             }
         }
+    }
+
+    fun reportPlantOnClick(v: View) {
+
+    }
+
+    fun helpIdentifyOnClick(v: View) {
+
     }
 
     private fun setStrokes(button: Button?, colorString : String) {

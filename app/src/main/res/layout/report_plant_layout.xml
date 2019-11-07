@@ -58,7 +58,8 @@
         android:textColor="#000000"
         android:textSize="8pt"
         android:textAllCaps="false"
-        android:text="@string/not_sure_plant">
+        android:text="@string/not_sure_plant"
+        android:onClick="helpIdentifyOnClick">
     </Button>
 
     <TextView
@@ -107,6 +108,7 @@
         android:textColor="#000000"
         android:textSize="8pt"
         android:textAllCaps="false"
-        android:text="@string/report_plant">
+        android:text="@string/report_plant"
+        android:onClick="reportPlantOnClick">
     </Button>
 </androidx.constraintlayout.widget.ConstraintLayout>
