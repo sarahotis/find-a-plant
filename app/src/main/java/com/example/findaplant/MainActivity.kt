@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notLoggedIn(): Boolean {
-        return true
+        return false
         //SharedPreferences
     }
 }

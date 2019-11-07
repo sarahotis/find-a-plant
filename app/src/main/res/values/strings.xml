@@ -3,4 +3,10 @@
     <string name="title_activity_maps">BasicPlantMap</string>
     <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
     <string name="no_location">This app needs access to your device location to continue!</string>
+    <string name="what_plant">What plant is this?</string>
+    <string name="user_input_plant">Enter plant name…</string>
+    <string name="not_sure_plant">Help me identify this!</string>
+    <string name="plant_description">Add description (optional)</string>
+    <string name="user_input_desc">Enter additional information…</string>
+    <string name="report_plant">Report Plant!</string>
 </resources>
