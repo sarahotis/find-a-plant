@@ -10,4 +10,5 @@
     <string name="user_input_desc">Enter additional information…</string>
     <string name="report_plant">Report Plant!</string>
     <string name="description_plant">Description</string>
+    <string name="blank_plant_name">Error: You must enter the name of the plant to continue!</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.findaplant
 
 import android.Manifest
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -15,7 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.graphics.drawable.GradientDrawable
-
+import android.location.Location
+import android.view.Gravity
+import android.widget.EditText
+import android.widget.Toast
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 
 class ReportPlantActivity : AppCompatActivity() {
@@ -23,10 +30,13 @@ class ReportPlantActivity : AppCompatActivity() {
     var reportImageView : ImageView? = null
     var helpIdentifyButton : Button? = null
     var reportPlantButton : Button? = null
+    var reportPlantEditText : EditText? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissions()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
     private fun requestPermissions() {
@@ -34,7 +44,7 @@ class ReportPlantActivity : AppCompatActivity() {
             && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MY_PERMISSIONS_REQUEST_LOCATION)
         } else {
-            setContentView(R.layout.report_plant_layout)
+            setupViews()
         }
     }
 
@@ -46,14 +56,7 @@ class ReportPlantActivity : AppCompatActivity() {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    setContentView(R.layout.report_plant_layout)
-                    reportImageView = findViewById(R.id.reportImageView)
-                    helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
-                    reportPlantButton = findViewById(R.id.reportPlantButton)
-
-                    // Set stroke (border) and body color of button
-                    setStrokes(helpIdentifyButton, "#FCB97D")
-                    setStrokes(reportPlantButton, "#FCB97D")
+                    setupViews()
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -84,11 +87,54 @@ class ReportPlantActivity : AppCompatActivity() {
     }
 
     fun reportPlantOnClick(v: View) {
+        animate(v)
+        val plantName = reportPlantEditText?.text.toString().trim() // Get plant's name
+        if (plantName.isEmpty()) { // If no name entered do not add to database, prompt user for entry
+            val errorToast = Toast.makeText(this, R.string.blank_plant_name, Toast.LENGTH_LONG)
+            errorToast.setGravity(Gravity.CENTER, 0, 0)
+            errorToast.show()
+        }
 
+        // Get last location of phone for logging the plant location
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener {location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    // Note: Default for android emulator is somewhere in Mountain View, must manually set
+                    Log.d("ananth", "Latitude: " + location.latitude + " and Longitude: " + location.longitude)
+                }
+            }
     }
 
     fun helpIdentifyOnClick(v: View) {
+        animate(v)
+        // TODO: Firebase MlKit stuff here
+    }
 
+    private fun animate(v: View?) {
+        val oldColor = Color.parseColor("#FFFFFF")
+        val newColor = Color.parseColor(LIGHT_ORANGE_COLOR)
+
+        /* Animate background color from white to newColor */
+        val colorAnimationForward = ValueAnimator.ofObject(ArgbEvaluator(), oldColor, newColor)
+        colorAnimationForward.duration = 250
+        val temp = ValueAnimator.AnimatorUpdateListener {
+            val drawable = v?.background as GradientDrawable
+            drawable.setColor(it.animatedValue as Int)
+        }
+        colorAnimationForward.addUpdateListener(temp)
+        colorAnimationForward.start()
+
+        /* Animate back to white from newColor */
+        val colorAnimationBackward = ValueAnimator.ofObject(ArgbEvaluator(), newColor, oldColor)
+        colorAnimationBackward.duration = 250
+        val temp2 = ValueAnimator.AnimatorUpdateListener {
+            val drawable = v?.background as GradientDrawable
+            drawable.setColor(it.animatedValue as Int)
+        }
+        colorAnimationBackward.addUpdateListener(temp2)
+        colorAnimationBackward.startDelay = 250
+        colorAnimationBackward.start()
     }
 
     private fun setStrokes(button: Button?, colorString : String) {
@@ -96,9 +142,22 @@ class ReportPlantActivity : AppCompatActivity() {
         drawable.setStroke(16, Color.parseColor(colorString))
     }
 
+    private fun setupViews() {
+        setContentView(R.layout.report_plant_layout)
+        reportImageView = findViewById(R.id.reportImageView)
+        helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
+        reportPlantButton = findViewById(R.id.reportPlantButton)
+        reportPlantEditText = findViewById(R.id.reportDescEditText)
+
+        // Set stroke (border) and body color of button
+        setStrokes(helpIdentifyButton, LIGHT_ORANGE_COLOR)
+        setStrokes(reportPlantButton, LIGHT_ORANGE_COLOR)
+    }
+
     companion object {
         val MY_PERMISSIONS_REQUEST_LOCATION = 1
         val REQUEST_IMAGE_CAPTURE = 1
+        const val LIGHT_ORANGE_COLOR = "#FCB97D"
     }
 
 }
