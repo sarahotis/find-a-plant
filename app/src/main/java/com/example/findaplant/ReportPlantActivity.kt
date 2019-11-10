@@ -86,28 +86,46 @@ class ReportPlantActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Adds plant to database and map
+     */
     fun reportPlantOnClick(v: View) {
-        animate(v)
+        animate(v) // Animate button color change
         val plantName = reportPlantEditText?.text.toString().trim() // Get plant's name
         if (plantName.isEmpty()) { // If no name entered do not add to database, prompt user for entry
             val errorToast = Toast.makeText(this, R.string.blank_plant_name, Toast.LENGTH_LONG)
             errorToast.setGravity(Gravity.CENTER, 0, 0)
             errorToast.show()
-        }
+        } else {
+            val mapsIntent = Intent(this, MapsActivity::class.java) // Intent to launch map with plant marker
 
-        // Get last location of phone for logging the plant location
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener {location : Location? ->
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    // Note: Default for android emulator is somewhere in Mountain View, must manually set
-                    Log.d("ananth", "Latitude: " + location.latitude + " and Longitude: " + location.longitude)
+            mapsIntent.putExtra(PLANT_NAME_KEY, plantName) // Store name for plant marker on map
+
+            // Get last location of phone for logging the plant location
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        // Note: Default for android emulator is somewhere in Mountain View, must manually set
+                        Log.d(
+                            TAG,
+                            "Latitude: " + location.latitude + " and Longitude: " + location.longitude
+                        )
+                        // Store longitude and latitude for plant marker on map
+                        mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
+                        mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
+                    }
                 }
-            }
+            // TODO: Add plant to database
+            startActivity(mapsIntent)
+        }
     }
 
+    /**
+     * Run MLKit to identify plant if user does not know the species name
+     */
     fun helpIdentifyOnClick(v: View) {
-        animate(v)
+        animate(v) // Animate button color change
         // TODO: Firebase MlKit stuff here
     }
 
@@ -147,7 +165,7 @@ class ReportPlantActivity : AppCompatActivity() {
         reportImageView = findViewById(R.id.reportImageView)
         helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
         reportPlantButton = findViewById(R.id.reportPlantButton)
-        reportPlantEditText = findViewById(R.id.reportDescEditText)
+        reportPlantEditText = findViewById(R.id.reportPlantEditText)
 
         // Set stroke (border) and body color of button
         setStrokes(helpIdentifyButton, LIGHT_ORANGE_COLOR)
@@ -155,9 +173,13 @@ class ReportPlantActivity : AppCompatActivity() {
     }
 
     companion object {
+        val TAG = "ReportPlantActivity"
         val MY_PERMISSIONS_REQUEST_LOCATION = 1
         val REQUEST_IMAGE_CAPTURE = 1
         const val LIGHT_ORANGE_COLOR = "#FCB97D"
+        const val LATITUDE_KEY = "LATITUDE_KEY"
+        const val LONGITUDE_KEY = "LONGITUDE_KEY"
+        const val PLANT_NAME_KEY = "PLANT_NAME_KEY"
     }
 
 }

@@ -34,10 +34,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        val mapIntent = intent
+        val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY)
+        // Note: Default lat/long is UMD
+        val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, 38.9858)
+        val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, -76.9373)
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val marker = LatLng(latitude, longitude)
+        mMap.addMarker(MarkerOptions().position(marker).title(plantName))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
     }
 }
