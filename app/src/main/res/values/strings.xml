@@ -11,4 +11,5 @@
     <string name="report_plant">Report Plant!</string>
     <string name="description_plant">Description</string>
     <string name="blank_plant_name">Error: You must enter the name of the plant to continue!</string>
+    <string name="title_activity_registraton">RegistratonActivity</string>
 </resources>
