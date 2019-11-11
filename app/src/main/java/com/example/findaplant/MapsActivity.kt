@@ -7,6 +7,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -36,13 +37,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         val mapIntent = intent
         val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY)
+        val plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
         // Note: Default lat/long is UMD
         val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, 38.9858)
         val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, -76.9373)
 
-        // Add a marker in Sydney and move the camera
+
+        // Add a marker at plant location and move the camera
         val marker = LatLng(latitude, longitude)
-        mMap.addMarker(MarkerOptions().position(marker).title(plantName))
+        if (plantDesc.isEmpty()) {
+            mMap.addMarker(MarkerOptions()
+                .position(marker)
+                .title(plantName)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
+        } else {
+            mMap.addMarker(MarkerOptions()
+                .position(marker)
+                .title(plantName)
+                .snippet(plantDesc)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
+        }
+        mMap.setMinZoomPreference(15.toFloat()) // Set zoom level (15 = streets, 1 = world)
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
     }
 }

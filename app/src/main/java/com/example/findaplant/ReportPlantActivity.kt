@@ -31,6 +31,7 @@ class ReportPlantActivity : AppCompatActivity() {
     var helpIdentifyButton : Button? = null
     var reportPlantButton : Button? = null
     var reportPlantEditText : EditText? = null
+    var reportDescEditText : EditText? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +101,8 @@ class ReportPlantActivity : AppCompatActivity() {
             val mapsIntent = Intent(this, MapsActivity::class.java) // Intent to launch map with plant marker
 
             mapsIntent.putExtra(PLANT_NAME_KEY, plantName) // Store name for plant marker on map
+            val plantDesc = reportDescEditText?.text.toString().trim() // Store extra info about plant
+            mapsIntent.putExtra(PLANT_DESC_KEY, plantDesc)
 
             // Get last location of phone for logging the plant location
             fusedLocationClient.lastLocation
@@ -107,16 +110,13 @@ class ReportPlantActivity : AppCompatActivity() {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
                         // Note: Default for android emulator is somewhere in Mountain View, must manually set
-                        Log.d(
-                            TAG,
-                            "Latitude: " + location.latitude + " and Longitude: " + location.longitude
-                        )
                         // Store longitude and latitude for plant marker on map
                         mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
                         mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
                     }
                 }
             // TODO: Add plant to database
+            // TODO: Error handling if no picture taken
             startActivity(mapsIntent)
         }
     }
@@ -166,6 +166,7 @@ class ReportPlantActivity : AppCompatActivity() {
         helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
         reportPlantButton = findViewById(R.id.reportPlantButton)
         reportPlantEditText = findViewById(R.id.reportPlantEditText)
+        reportDescEditText = findViewById(R.id.reportDescEditText)
 
         // Set stroke (border) and body color of button
         setStrokes(helpIdentifyButton, LIGHT_ORANGE_COLOR)
@@ -180,6 +181,7 @@ class ReportPlantActivity : AppCompatActivity() {
         const val LATITUDE_KEY = "LATITUDE_KEY"
         const val LONGITUDE_KEY = "LONGITUDE_KEY"
         const val PLANT_NAME_KEY = "PLANT_NAME_KEY"
+        const val PLANT_DESC_KEY = "PLANT_DESC_KEY"
     }
 
 }
