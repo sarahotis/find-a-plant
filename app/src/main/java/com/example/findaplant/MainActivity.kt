@@ -48,7 +48,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notLoggedIn(): Boolean {
-        return false
+        return true
         //SharedPreferences
+        //TODO: move firebase login checking here to save the user a step
     }
 }

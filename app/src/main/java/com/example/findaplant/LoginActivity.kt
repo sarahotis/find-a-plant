@@ -41,7 +41,6 @@ class LoginActivity : AppCompatActivity() {
         val email = userEmail?.getText().toString();
         val password = userPassword?.getText().toString();
 
-        // Todo : Retrieve email and password, make sure it's not empty
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(applicationContext, "Please enter email...", Toast.LENGTH_LONG).show()
             return
@@ -50,10 +49,9 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Please enter password!", Toast.LENGTH_LONG).show()
             return
         }
-
-        // Todo : Sign in with given Email and Password
+        //TODO: add firebase database of users - this will fail until then
         // Retrieve UID for Current User if Login successful and store in intent, for the key UserID
-        // Start Intent DashboardActivity if Registration Successful
+        // Start ReportPlantActivity if Registration Successful
         mAuth!!.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 progressBar!!.visibility = View.GONE
