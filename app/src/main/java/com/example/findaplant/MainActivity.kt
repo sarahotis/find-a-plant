@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notLoggedIn(): Boolean {
-        return true
+        return false //switched off for developing ReportPlant
         //SharedPreferences
         //TODO: move firebase login checking here to save the user a step
     }

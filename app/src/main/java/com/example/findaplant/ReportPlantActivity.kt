@@ -41,18 +41,31 @@ class ReportPlantActivity : AppCompatActivity() {
     }
 
     private fun requestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MY_PERMISSIONS_REQUEST_LOCATION)
-        } else {
-            setupViews()
+        val permissionsNeeded = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.remove(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.remove(Manifest.permission.CAMERA)
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+
+        ActivityCompat.requestPermissions(this, permissionsNeeded.toTypedArray(), MY_PERMISSIONS_REQUEST)
+        setupViews()
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            MY_PERMISSIONS_REQUEST_LOCATION -> {
+            MY_PERMISSIONS_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay! Do the
@@ -175,7 +188,7 @@ class ReportPlantActivity : AppCompatActivity() {
 
     companion object {
         val TAG = "ReportPlantActivity"
-        val MY_PERMISSIONS_REQUEST_LOCATION = 1
+        val MY_PERMISSIONS_REQUEST = 1
         val REQUEST_IMAGE_CAPTURE = 1
         const val LIGHT_ORANGE_COLOR = "#FCB97D"
         const val LATITUDE_KEY = "LATITUDE_KEY"
