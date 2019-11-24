@@ -2,6 +2,7 @@ package com.example.findaplant
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,10 +11,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.database.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    private lateinit var databasePlants: DatabaseReference // For FireBase stuff
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +39,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         val mapIntent = intent
-        val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY)
+        val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
         val plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
         // Note: Default lat/long is UMD
         val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, 38.9858)
@@ -57,7 +60,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .snippet(plantDesc)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
         }
-        mMap.setMinZoomPreference(15.toFloat()) // Set zoom level (15 = streets, 1 = world)
+        mMap.setMinZoomPreference(10.toFloat()) // Set zoom level (20 = buildings, 1 = world)
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
+
+        /* Add all the plants in the database previously to the map */
+        val database = FirebaseDatabase.getInstance()
+        databasePlants = database.getReference("Greenbelt Plants")
+        databasePlants.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for(postSnapshot in dataSnapshot.children) {
+                    val name = postSnapshot.child("common_name").value as String
+                    if (name.isNotEmpty()) { // Make sure plant has a name
+                        // Get latitude and longitude from database
+                        val datLat = postSnapshot.child("latitude").value as Double
+                        val datLong = postSnapshot.child("longitude").value as Double
+                        //val imageURL = postSnapshot.child("image_url").value as String
+
+                        // Add plant marker to map
+                        val datMarker = LatLng(datLat, datLong)
+                        mMap.addMarker(MarkerOptions()
+                            .position(datMarker)
+                            .title(name.capitalizeWords())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.plant
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Report Firebase", "Failed to read data", error.toException())
+            }
+        })
     }
+
+    fun String.capitalizeWords(): String = split(" ").map { it.capitalize() }.joinToString(" ")
 }
