@@ -9,7 +9,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -18,6 +17,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.graphics.drawable.GradientDrawable
 import android.location.Location
+import android.net.Uri
+import android.provider.Settings
 import android.view.Gravity
 import android.widget.EditText
 import android.widget.Toast
@@ -27,11 +28,13 @@ import com.google.android.gms.location.LocationServices
 
 class ReportPlantActivity : AppCompatActivity() {
 
-    var reportImageView : ImageView? = null
-    var helpIdentifyButton : Button? = null
-    var reportPlantButton : Button? = null
-    var reportPlantEditText : EditText? = null
-    var reportDescEditText : EditText? = null
+    var reportImageView : ImageView? = null // Holds image of plant (camera by default)
+    var helpIdentifyButton : Button? = null // Click to launch MLKit (eventually)
+    var permissionsButton : Button? = null // Click to launch permissions page
+    var reportPlantButton : Button? = null // Click to report plant and go to map
+    var reportPlantEditText : EditText? = null // Place to enter plant name
+    var reportDescEditText : EditText? = null // Place to enter optional plant description
+    var imageTaken = false // Determines if plant picture was taken
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,9 +60,14 @@ class ReportPlantActivity : AppCompatActivity() {
             permissionsNeeded.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-        ActivityCompat.requestPermissions(this, permissionsNeeded.toTypedArray(), MY_PERMISSIONS_REQUEST)
+        if (permissionsNeeded.size > 0) { // Permissions array cannot be empty/null
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsNeeded.toTypedArray(),
+                MY_PERMISSIONS_REQUEST
+            )
+        }
         setupViews()
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -68,13 +76,20 @@ class ReportPlantActivity : AppCompatActivity() {
             MY_PERMISSIONS_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    // permission was granted, yay! Setup the views
                     setupViews()
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    setContentView(R.layout.report_plant_no_location)
+                    // permission denied, boo! Different layout w/ prompt to enable permissions
+                    setContentView(R.layout.report_plant_no_permissions)
+                    permissionsButton = findViewById(R.id.enable_permissions_button)
+                    // Clickable button that opens permissions page so user can enable them
+                    permissionsButton?.setOnClickListener {
+                        val permissionIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + packageName))
+                        permissionIntent.addCategory(Intent.CATEGORY_DEFAULT)
+                        permissionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(permissionIntent)
+                    }
                 }
                 return
             }
@@ -86,6 +101,8 @@ class ReportPlantActivity : AppCompatActivity() {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             reportImageView?.setImageBitmap(imageBitmap)
+            reportImageView?.rotation = 90f
+            imageTaken = true
         }
     }
 
@@ -110,7 +127,15 @@ class ReportPlantActivity : AppCompatActivity() {
             val errorToast = Toast.makeText(this, R.string.blank_plant_name, Toast.LENGTH_LONG)
             errorToast.setGravity(Gravity.CENTER, 0, 0)
             errorToast.show()
-        } else {
+        }
+
+        if (plantName.isNotEmpty() && !imageTaken) { // No image taken, prompt user for entry
+            val errorToast = Toast.makeText(this, R.string.blank_plant_image, Toast.LENGTH_LONG)
+            errorToast.setGravity(Gravity.CENTER, 0, 0)
+            errorToast.show()
+        }
+
+        if (plantName.isNotEmpty() && imageTaken) {
             val mapsIntent = Intent(this, MapsActivity::class.java) // Intent to launch map with plant marker
 
             mapsIntent.putExtra(PLANT_NAME_KEY, plantName) // Store name for plant marker on map
