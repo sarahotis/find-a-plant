@@ -14,9 +14,10 @@
        app:layout_constraintRight_toRightOf="parent"
        app:layout_constraintLeft_toLeftOf="parent"
        app:layout_constraintVertical_bias="0.2"
-       android:text="Search A Plant"
+       android:text="@string/main_search_a_plant"
        android:textSize="14pt"
        android:gravity="center"
+       android:fontFamily='sans-serif-condensed'
        android:textColor="#000000">
    </TextView>
 
@@ -45,8 +46,13 @@
         app:layout_constraintTop_toBottomOf="@id/plant_search_text"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:background="@drawable/button_rounded_corners"
         android:gravity="center"
-        android:text="Search">
+        android:padding="10dp"
+        android:textSize="8pt"
+        android:textColor="#000000"
+        android:textAllCaps="false"
+        android:text="@string/search">
     </Button>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

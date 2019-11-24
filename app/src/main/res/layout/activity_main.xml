@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="false"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#66EDD892">
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,7 +22,13 @@
         android:id="@+id/report"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Report A Plant Sighting!"
+        android:background="@drawable/button_rounded_corners"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="8pt"
+        android:textAllCaps="false"
+        android:text="@string/main_report_a_plant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -32,14 +39,27 @@
         android:id="@+id/search"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Search" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_margin="20dp"
+        android:background="@drawable/button_rounded_corners"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="8pt"
+        android:textAllCaps="false"
+        android:text="@string/main_search_a_plant" />
 
     <Button
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Description"
+        android:background="@drawable/button_rounded_corners"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="8pt"
+        android:textAllCaps="false"
+        android:text="@string/main_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

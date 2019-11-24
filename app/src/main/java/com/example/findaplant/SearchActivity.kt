@@ -35,6 +35,7 @@ class SearchActivity : AppCompatActivity() {
 
         //Set on click listener for Search Button
         searchPlantButton.setOnClickListener {
+            ReportPlantActivity.animate(it)
             var plantToSearch = searchText!!.text.toString()
             Log.i("SearchActivity", "Plant search " + plantToSearch)
 
@@ -80,5 +81,6 @@ class SearchActivity : AppCompatActivity() {
     private fun initializeViews() {
         searchText = findViewById(R.id.plant_search_text)
         searchPlantButton = findViewById(R.id.plant_search_button)
+        ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 }

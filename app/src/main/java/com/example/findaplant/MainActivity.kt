@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         initializeViews()
 
         reportBtn!!.setOnClickListener {
+            ReportPlantActivity.animate(it)
             if (notLoggedIn()) {
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))
             } else {
@@ -30,12 +31,14 @@ class MainActivity : AppCompatActivity() {
 
         descriptionBtn!!.setOnClickListener{
             Log.i("Description", "activity start")
+            ReportPlantActivity.animate(it)
             startActivity(Intent(this@MainActivity, DescriptionActivity::class.java))
 
         }
 
         searchBtn!!.setOnClickListener {
             Log.i("Search", "Search Activity Started")
+            ReportPlantActivity.animate(it)
             startActivity(Intent(this@MainActivity, SearchActivity::class.java))
         }
 
@@ -43,8 +46,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeViews() {
         reportBtn = findViewById(R.id.report)
+        ReportPlantActivity.setStrokes(reportBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         descriptionBtn = findViewById(R.id.description)
+        ReportPlantActivity.setStrokes(descriptionBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         searchBtn = findViewById(R.id.search)
+        ReportPlantActivity.setStrokes(searchBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 
     private fun notLoggedIn(): Boolean {

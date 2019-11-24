@@ -154,7 +154,6 @@ class ReportPlantActivity : AppCompatActivity() {
                     }
                 }
             // TODO: Add plant to database
-            // TODO: Error handling if no picture taken
             startActivity(mapsIntent)
         }
     }
@@ -167,36 +166,6 @@ class ReportPlantActivity : AppCompatActivity() {
         // TODO: Firebase MlKit stuff here
     }
 
-    private fun animate(v: View?) {
-        val oldColor = Color.parseColor("#FFFFFF")
-        val newColor = Color.parseColor(LIGHT_ORANGE_COLOR)
-
-        /* Animate background color from white to newColor */
-        val colorAnimationForward = ValueAnimator.ofObject(ArgbEvaluator(), oldColor, newColor)
-        colorAnimationForward.duration = 250
-        val temp = ValueAnimator.AnimatorUpdateListener {
-            val drawable = v?.background as GradientDrawable
-            drawable.setColor(it.animatedValue as Int)
-        }
-        colorAnimationForward.addUpdateListener(temp)
-        colorAnimationForward.start()
-
-        /* Animate back to white from newColor */
-        val colorAnimationBackward = ValueAnimator.ofObject(ArgbEvaluator(), newColor, oldColor)
-        colorAnimationBackward.duration = 250
-        val temp2 = ValueAnimator.AnimatorUpdateListener {
-            val drawable = v?.background as GradientDrawable
-            drawable.setColor(it.animatedValue as Int)
-        }
-        colorAnimationBackward.addUpdateListener(temp2)
-        colorAnimationBackward.startDelay = 250
-        colorAnimationBackward.start()
-    }
-
-    private fun setStrokes(button: Button?, colorString : String) {
-        val drawable = button?.background as GradientDrawable
-        drawable.setStroke(16, Color.parseColor(colorString))
-    }
 
     private fun setupViews() {
         setContentView(R.layout.report_plant_layout)
@@ -220,6 +189,37 @@ class ReportPlantActivity : AppCompatActivity() {
         const val LONGITUDE_KEY = "LONGITUDE_KEY"
         const val PLANT_NAME_KEY = "PLANT_NAME_KEY"
         const val PLANT_DESC_KEY = "PLANT_DESC_KEY"
+
+        fun animate(v: View?) {
+            val oldColor = Color.parseColor("#FFFFFF")
+            val newColor = Color.parseColor(LIGHT_ORANGE_COLOR)
+
+            /* Animate background color from white to newColor */
+            val colorAnimationForward = ValueAnimator.ofObject(ArgbEvaluator(), oldColor, newColor)
+            colorAnimationForward.duration = 250
+            val temp = ValueAnimator.AnimatorUpdateListener {
+                val drawable = v?.background as GradientDrawable
+                drawable.setColor(it.animatedValue as Int)
+            }
+            colorAnimationForward.addUpdateListener(temp)
+            colorAnimationForward.start()
+
+            /* Animate back to white from newColor */
+            val colorAnimationBackward = ValueAnimator.ofObject(ArgbEvaluator(), newColor, oldColor)
+            colorAnimationBackward.duration = 250
+            val temp2 = ValueAnimator.AnimatorUpdateListener {
+                val drawable = v?.background as GradientDrawable
+                drawable.setColor(it.animatedValue as Int)
+            }
+            colorAnimationBackward.addUpdateListener(temp2)
+            colorAnimationBackward.startDelay = 250
+            colorAnimationBackward.start()
+        }
+
+        fun setStrokes(button: Button?, colorString : String) {
+            val drawable = button?.background as GradientDrawable
+            drawable.setStroke(16, Color.parseColor(colorString))
+        }
     }
 
 }

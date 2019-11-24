@@ -14,4 +14,8 @@
     <string name="blank_plant_name">Error: You must enter the name of the plant to continue!</string>
     <string name="blank_plant_image">Error: You must take a picture of the plant to continue!</string>
     <string name="title_activity_registraton">RegistratonActivity</string>
+    <string name="main_report_a_plant">Report A Plant</string>
+    <string name="main_search_a_plant">Find A Plant</string>
+    <string name="main_description">Description</string>
+    <string name="search">Search!</string>
 </resources>
