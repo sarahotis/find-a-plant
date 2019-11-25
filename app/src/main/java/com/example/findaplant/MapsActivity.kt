@@ -1,8 +1,14 @@
 package com.example.findaplant
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,6 +16,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 
@@ -74,14 +81,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Get latitude and longitude from database
                         val datLat = postSnapshot.child("latitude").value as Double
                         val datLong = postSnapshot.child("longitude").value as Double
-                        //val imageURL = postSnapshot.child("image_url").value as String
+                        val imageURL = postSnapshot.child("image_url").value as String
 
                         // Add plant marker to map
-                        val datMarker = LatLng(datLat, datLong)
-                        mMap.addMarker(MarkerOptions()
-                            .position(datMarker)
+                        val datLocation = LatLng(datLat, datLong)
+                        val datMarker = mMap.addMarker(MarkerOptions()
+                            .position(datLocation)
                             .title(name.capitalizeWords())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.plant
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                        datMarker.tag = imageURL // Tag used to store image of plant on marker
+
+                        /*Glide.with(applicationContext)
+                            .asBitmap()
+                            .load(imageURL)
+                            .fitCenter()
+                            .into(object : SimpleTarget<Bitmap>(150, 150) {
+                                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                                    mMap.addMarker(MarkerOptions()
+                                        .position(datLocation)
+                                        .title(name.capitalizeWords())
+                                        .icon(BitmapDescriptorFactory.fromBitmap(resource)))
+                                }
+                            })*/
                     }
                 }
             }
@@ -90,7 +111,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.w("Report Firebase", "Failed to read data", error.toException())
             }
         })
+
+        mMap.setOnInfoWindowClickListener {
+            val descriptionIntent = Intent(this, DescriptionActivity::class.java)
+            descriptionIntent.putExtra(TITLE_KEY, it.title)
+            descriptionIntent.putExtra(DESCRIPTION_KEY, it.snippet)
+            if (it.tag != null) {
+                descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
+            }
+            startActivity(descriptionIntent)
+        }
     }
 
     fun String.capitalizeWords(): String = split(" ").map { it.capitalize() }.joinToString(" ")
+
+    companion object {
+        const val TITLE_KEY = "TITLE_KEY"
+        const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
+        const val IMAGE_KEY = "IMAGE_KEY"
+    }
 }

@@ -18,4 +18,6 @@
     <string name="main_search_a_plant">Find A Plant</string>
     <string name="main_description">Description</string>
     <string name="search">Search!</string>
+    <string name="back_to_map">Return to Map</string>
+    <string name="back_to_main">Return to Home</string>
 </resources>
