@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">FindAPlant</string>
+    <string name="title_activity_maps">BasicPlantMap</string>
+    <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
+    <string name="no_permissions">This app needs access to your device camera, location, and storage to continue!</string>
+    <string name="enable_permissions">Click here to enable permissions</string>
+    <string name="what_plant">What plant is this?</string>
+    <string name="user_input_plant">Enter plant name…</string>
+    <string name="not_sure_plant">Help me identify this!</string>
+    <string name="plant_description">Add description (optional)</string>
+    <string name="user_input_desc">Enter additional information…</string>
+    <string name="report_plant">Report Plant!</string>
+    <string name="description_plant">Description</string>
+    <string name="blank_plant_name">Error: You must enter the name of the plant to continue!</string>
+    <string name="blank_plant_image">Error: You must take a picture of the plant to continue!</string>
+    <string name="title_activity_registraton">RegistratonActivity</string>
+    <string name="main_report_a_plant">Report A Plant</string>
+    <string name="main_search_a_plant">Find A Plant</string>
+    <string name="main_description">Description</string>
+    <string name="search">Search!</string>
+    <string name="back_to_map">Return to Map</string>
+    <string name="back_to_main">Return to Home</string>
+</resources>

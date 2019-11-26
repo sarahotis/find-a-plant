@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "123907915185",
+    "firebase_url": "https://findaplant-791b9.firebaseio.com",
+    "project_id": "findaplant-791b9",
+    "storage_bucket": "findaplant-791b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123907915185:android:e046ef8cddf25b2925d190",
+        "android_client_info": {
+          "package_name": "com.example.findaplant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "123907915185-616jtuu8sipqll6s28bbcih55imfdutr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ14z_tChG5qGR2192TSHP3Uw417weJic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "123907915185-616jtuu8sipqll6s28bbcih55imfdutr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
