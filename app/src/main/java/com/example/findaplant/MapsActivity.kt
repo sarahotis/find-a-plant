@@ -67,8 +67,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .snippet(plantDesc)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
         }
-        mMap.setMinZoomPreference(10.toFloat()) // Set zoom level (20 = buildings, 1 = world)
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
+        // Max zoom out level (20 = buildings, 1 = world)
+        mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
+        //Camera initially appears at zoom level 15
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, INITIAL_ZOOM_LEVEL));
 
         /* Add all the plants in the database previously to the map */
         val database = FirebaseDatabase.getInstance()
@@ -129,5 +131,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         const val TITLE_KEY = "TITLE_KEY"
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
         const val IMAGE_KEY = "IMAGE_KEY"
+        const val INITIAL_ZOOM_LEVEL = 16f
+        const val MINIMUM_ZOOM_LEVEL = 10f
     }
 }
