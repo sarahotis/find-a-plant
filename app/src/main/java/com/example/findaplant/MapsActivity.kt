@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
@@ -24,6 +25,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var databasePlants: DatabaseReference // For FireBase stuff
+    private var backToMainButton : Button? = null //TODO: eliminate code duplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +34,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        backToMainButton = findViewById(R.id.backToMainButton)
+        ReportPlantActivity.setStrokes(backToMainButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
+        backToMainButton?.setOnClickListener {
+            ReportPlantActivity.animate(it)
+            val mainIntent = Intent(this, MainActivity::class.java)
+            startActivity(mainIntent)
+        }
     }
 
     /**
@@ -48,9 +58,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapIntent = intent
         val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
         val plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
-        // Note: Default lat/long is UMD
-        val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, 38.9858)
-        val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, -76.9373)
+        val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, DEFAULT_LAT)
+        val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, DEFAULT_LONG)
 
 
         // Add a marker at plant location and move the camera
@@ -67,8 +76,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .snippet(plantDesc)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
         }
-        mMap.setMinZoomPreference(10.toFloat()) // Set zoom level (20 = buildings, 1 = world)
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
+        // Max zoom out level (20 = buildings, 1 = world)
+        mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
+        //Camera initially appears at zoom level 15
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, INITIAL_ZOOM_LEVEL));
 
         /* Add all the plants in the database previously to the map */
         val database = FirebaseDatabase.getInstance()
@@ -129,5 +140,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         const val TITLE_KEY = "TITLE_KEY"
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
         const val IMAGE_KEY = "IMAGE_KEY"
+        const val INITIAL_ZOOM_LEVEL = 16f
+        const val MINIMUM_ZOOM_LEVEL = 10f
+        // Note: Default lat/long is UMD
+        const val DEFAULT_LAT = 38.9858
+        const val DEFAULT_LONG = -76.9373
     }
 }
