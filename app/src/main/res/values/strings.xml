@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FindAPlant</string>
     <string name="title_activity_maps">BasicPlantMap</string>
+    <string name="message_activity_maps">Thanks for contributing!</string>
     <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
     <string name="no_permissions">This app needs access to your device camera, location, and storage to continue!</string>
     <string name="enable_permissions">Click here to enable permissions</string>
@@ -20,4 +21,5 @@
     <string name="search">Search!</string>
     <string name="back_to_map">Return to Map</string>
     <string name="back_to_main">Return to Home</string>
+    <string name="search_report_another">Find Or Report Another Plant?</string>
 </resources>
