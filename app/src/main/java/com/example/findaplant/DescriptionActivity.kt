@@ -1,10 +1,10 @@
 package com.example.findaplant
 
 import android.content.Intent
-import android.opengl.Visibility
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -50,14 +50,17 @@ class DescriptionActivity : AppCompatActivity(){
             plantDescription?.visibility = View.VISIBLE
         }
 
-        val plantURL = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
-        if (plantURL != null) {
+        val plantPicSource = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
+        // kinda hacky but whatever atm
+        if (plantPicSource.contains("https")) { // URL
             Glide.with(this)
-                .load(plantURL)
+                .load(plantPicSource)
                 .into(plantImage!!)
+        } else { // Base64 encoded
+            val byteArray = Base64.decode(plantPicSource, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            plantImage?.setImageBitmap(bitmap)
+            plantImage?.rotation = 90f
         }
-
-
     }
-
 }

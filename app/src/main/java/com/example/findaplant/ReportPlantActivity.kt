@@ -25,7 +25,6 @@ import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
-
 class ReportPlantActivity : AppCompatActivity() {
 
     var reportImageView : ImageView? = null // Holds image of plant (camera by default)
@@ -34,7 +33,8 @@ class ReportPlantActivity : AppCompatActivity() {
     var reportPlantButton : Button? = null // Click to report plant and go to map
     var reportPlantEditText : EditText? = null // Place to enter plant name
     var reportDescEditText : EditText? = null // Place to enter optional plant description
-    var imageTaken = false // Determines if plant picture was taken
+    var imageTakenBool = false // Determines if plant picture was taken
+    lateinit var imageTaken : Bitmap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,9 +100,10 @@ class ReportPlantActivity : AppCompatActivity() {
         /** Replace current image view picture with thumbnail of image taken by user */
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
+            imageTaken = imageBitmap // Save image taken to global variable for later storage
             reportImageView?.setImageBitmap(imageBitmap)
             reportImageView?.rotation = 90f
-            imageTaken = true
+            imageTakenBool = true
         }
     }
 
@@ -129,18 +130,19 @@ class ReportPlantActivity : AppCompatActivity() {
             errorToast.show()
         }
 
-        if (plantName.isNotEmpty() && !imageTaken) { // No image taken, prompt user for entry
+        if (plantName.isNotEmpty() && !imageTakenBool) { // No image taken, prompt user for entry
             val errorToast = Toast.makeText(this, R.string.blank_plant_image, Toast.LENGTH_LONG)
             errorToast.setGravity(Gravity.CENTER, 0, 0)
             errorToast.show()
         }
 
-        if (plantName.isNotEmpty() && imageTaken) {
+        if (plantName.isNotEmpty() && imageTakenBool) {
             val mapsIntent = Intent(this, MapsActivity::class.java) // Intent to launch map with plant marker
 
             mapsIntent.putExtra(PLANT_NAME_KEY, plantName) // Store name for plant marker on map
             val plantDesc = reportDescEditText?.text.toString().trim() // Store extra info about plant
             mapsIntent.putExtra(PLANT_DESC_KEY, plantDesc)
+            mapsIntent.putExtra(IMAGE_KEY, imageTaken)
 
             // Get last location of phone for logging the plant location
             fusedLocationClient.lastLocation
@@ -151,10 +153,9 @@ class ReportPlantActivity : AppCompatActivity() {
                         // Store longitude and latitude for plant marker on map
                         mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
                         mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
+                        startActivity(mapsIntent)
                     }
                 }
-            // TODO: Add plant to database
-            startActivity(mapsIntent)
         }
     }
 
@@ -189,6 +190,7 @@ class ReportPlantActivity : AppCompatActivity() {
         const val LONGITUDE_KEY = "LONGITUDE_KEY"
         const val PLANT_NAME_KEY = "PLANT_NAME_KEY"
         const val PLANT_DESC_KEY = "PLANT_DESC_KEY"
+        const val IMAGE_KEY = "IMAGE_KEY"
 
         fun animate(v: View?) {
             val oldColor = Color.parseColor("#FFFFFF")
