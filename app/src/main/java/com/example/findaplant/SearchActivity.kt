@@ -1,5 +1,6 @@
 package com.example.findaplant
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
@@ -17,6 +18,7 @@ class SearchActivity : AppCompatActivity() {
     internal var searchText: EditText? = null
     private lateinit var databasePlants: DatabaseReference
     private lateinit var searchPlantButton: Button
+    private lateinit var plantToFind: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +28,8 @@ class SearchActivity : AppCompatActivity() {
 
         //get instance of database
         val database = FirebaseDatabase.getInstance()
-        databasePlants = database.getReference("Plants Added To FB")
-        Log.i("Firebase", "Database plants referenced")
+        databasePlants = database.getReference("Greenbelt Plants")
+        Log.i("Firebase", "Database Greenbelt plants referenced")
 
         //get search text
 
@@ -37,6 +39,7 @@ class SearchActivity : AppCompatActivity() {
         searchPlantButton.setOnClickListener {
             ReportPlantActivity.animate(it)
             var plantToSearch = searchText!!.text.toString()
+            plantToFind = plantToSearch
             Log.i("SearchActivity", "Plant search " + plantToSearch)
 
             if(plantToSearch == ""){
@@ -44,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
                 pleaseEnterPlantText.show()
             }else{
                 //call searchPlant method
-                searchPlant(plantToSearch)
+                searchPlant()
             }
         }
 
@@ -57,24 +60,36 @@ class SearchActivity : AppCompatActivity() {
 
     //Search firebase for plant if found then start DescriptionActivity. Else make toast that plant
     //isn't found
-    private fun searchPlant(plantText : String){
-        //Making a plant object to add to Firebase
-        var plant = Plant("Cosmos", "Purple petals, yellow inside", "Ngan")
-        databasePlants.setValue(plant)
-        Log.i("Firebase", "onStart started in Search Activity")
-        databasePlants.addValueEventListener(object : ValueEventListener{
+    private fun searchPlant(){
+        Log.i("Search Activity", "Entered searchPlant function")
+        databasePlants.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-               for(postSnapshot in dataSnapshot.children){
-                   var plant = postSnapshot.getValue(String::class.java)
-                   Log.i("SearchActivity", "Plant name is " + plant)
-               }
+                for(postSnapshot in dataSnapshot.children){
+                    Log.i("Search Activity", "Through loop")
+                    val name = postSnapshot.child("common_name").value as String
+                    val description = postSnapshot.child("description").value as String
+                    if(name.compareTo(plantToFind) === 0){
+                        Log.i("Search Activity", "We have a match!" )
+                        //If match found then move to description activity
+                        val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
+                        //Placing plant name and description into intent
+                        descriptionActivityIntent.putExtra(Intent.EXTRA_TEXT, description)
+                        descriptionActivityIntent.putExtra(Intent.EXTRA_TITLE, name)
+                        startActivity((descriptionActivityIntent))
+
+                    }
+
+                }
+
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.w("Firebase", "Failed to read data", error.toException())
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         })
-        //search Firebase
+
+        Log.i("Search Activity", "End of firebase loop")
+        Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
 
     }
 
