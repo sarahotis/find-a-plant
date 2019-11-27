@@ -33,6 +33,16 @@ tools:context=".RegistrationActivity">
     android:layout_height="wrap_content"
     android:text="Register" />
 
+<Button
+    android:id="@+id/loginButton"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
+    android:background="@null"
+    android:forceDarkAllowed="false"
+    android:text="@string/login_instead"
+    android:textColor="@android:color/black" />
+
 <ProgressBar
     android:id="@+id/progressBar"
     android:layout_width="wrap_content"

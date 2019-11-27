@@ -34,15 +34,16 @@ tools:context=".LoginActivity">
     android:layout_height="wrap_content"
     android:text="Login" />
 
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:background="@null"
-        android:forceDarkAllowed="false"
-        android:text="New here? Register Now!"
-        android:textColor="@android:color/black" />
+<Button
+    android:id="@+id/registerButton"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
+    android:background="@null"
+    android:forceDarkAllowed="false"
+    android:text="@string/register_instead"
+    android:textColor="@android:color/black" />
+
 <ProgressBar
     android:id="@+id/progressBar"
     android:layout_width="wrap_content"
