@@ -21,4 +21,5 @@
     <string name="search">Search!</string>
     <string name="back_to_map">Return to Map</string>
     <string name="back_to_main">Return to Home</string>
+    <string name="search_report_another">Find Or Report Another Plant?</string>
 </resources>
