@@ -48,9 +48,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapIntent = intent
         val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
         val plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
-        // Note: Default lat/long is UMD
-        val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, 38.9858)
-        val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, -76.9373)
+        val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, DEFAULT_LAT)
+        val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, DEFAULT_LONG)
 
 
         // Add a marker at plant location and move the camera
@@ -133,5 +132,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         const val IMAGE_KEY = "IMAGE_KEY"
         const val INITIAL_ZOOM_LEVEL = 16f
         const val MINIMUM_ZOOM_LEVEL = 10f
+        // Note: Default lat/long is UMD
+        const val DEFAULT_LAT = 38.9858
+        const val DEFAULT_LONG = -76.9373
     }
 }
