@@ -21,6 +21,7 @@ class LoginActivity : AppCompatActivity() {
     private var userPassword: EditText? = null
     private var loginBtn: Button? = null
     private var progressBar: ProgressBar? = null
+    private var registerButton : Button? = null //TODO: eliminate code duplication
 
     private var mAuth: FirebaseAuth? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +35,12 @@ class LoginActivity : AppCompatActivity() {
         initializeUI()
 
         loginBtn!!.setOnClickListener { loginUserAccount() }
+
+        registerButton = findViewById(R.id.registerButton)
+        registerButton?.setOnClickListener {
+            val mainIntent = Intent(this, RegistrationActivity::class.java)
+            startActivity(mainIntent)
+        }
     }
 
     private fun loginUserAccount() {

@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
 
 
     internal var reportBtn: Button? = null
-    internal var descriptionBtn: Button? = null
+//    internal var descriptionBtn: Button? = null
     internal var searchBtn: Button? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +29,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        descriptionBtn!!.setOnClickListener{
-            Log.i("Description", "activity start")
-            ReportPlantActivity.animate(it)
-            startActivity(Intent(this@MainActivity, DescriptionActivity::class.java))
-
-        }
+//        descriptionBtn!!.setOnClickListener{
+//            Log.i("Description", "activity start")
+//            ReportPlantActivity.animate(it)
+//            startActivity(Intent(this@MainActivity, DescriptionActivity::class.java))
+//
+//        }
 
         searchBtn!!.setOnClickListener {
             Log.i("Search", "Search Activity Started")
@@ -47,14 +47,14 @@ class MainActivity : AppCompatActivity() {
     private fun initializeViews() {
         reportBtn = findViewById(R.id.report)
         ReportPlantActivity.setStrokes(reportBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
-        descriptionBtn = findViewById(R.id.description)
-        ReportPlantActivity.setStrokes(descriptionBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
-        searchBtn = findViewById(R.id.search)
+//        descriptionBtn = findViewById(R.id.description)
+//        ReportPlantActivity.setStrokes(descriptionBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
+        searchBtn = findViewById(R.id.centered_search)
         ReportPlantActivity.setStrokes(searchBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 
     private fun notLoggedIn(): Boolean {
-        return false //switched off for developing ReportPlant
+        return true //switched on for developing Registration and Login
         //SharedPreferences
         //TODO: move firebase login checking here to save the user a step
     }
