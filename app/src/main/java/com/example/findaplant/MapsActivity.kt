@@ -72,8 +72,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             mMap.addMarker(MarkerOptions()
                 .position(marker)
+                .flat(true)
                 .title(plantName)
-                .snippet(plantDesc)
+                .snippet(plantDesc + "\nClick for more info!") //TODO: expand this InfoWindow based on text length - TextViews in a layout file
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
         }
         // Max zoom out level (20 = buildings, 1 = world)
