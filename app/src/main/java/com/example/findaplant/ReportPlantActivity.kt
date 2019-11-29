@@ -186,31 +186,33 @@ class ReportPlantActivity : AppCompatActivity() {
 
             labeler.processImage(image)
                 .addOnSuccessListener { labels ->
-                    // Task completed successfully, get the potential labels
-                    val labelStringList = ArrayList<String>()
-                    for (label in labels) {
-                        labelStringList.add(label.text)
-                    }
-                    val labelString = labelStringList.joinToString(", ")
+                    if (labels.isEmpty()) { // MLKit ran but no labels
+                        showMLKitError()
+                    } else {
+                        // Task completed successfully, get the potential labels
+                        val labelStringList = ArrayList<String>()
+                        for (label in labels) {
+                            labelStringList.add(label.text)
+                        }
+                        val labelString = labelStringList.joinToString(", ")
 
-                    // Alert user of potential labels with an AlertDialog
-                    val builder: AlertDialog.Builder? = this.let {
-                        AlertDialog.Builder(it)
-                    }
-                    // Display the AlertDialog with the potential labels
-                    builder?.setMessage(getString(R.string.mlkit_results ,labelString))
-                    val dialog: AlertDialog? = builder?.create()
-                    dialog?.show()
+                        // Alert user of potential labels with an AlertDialog
+                        val builder: AlertDialog.Builder? = this.let {
+                            AlertDialog.Builder(it)
+                        }
+                        // Display the AlertDialog with the potential labels
+                        builder?.setMessage(getString(R.string.mlkit_results, labelString))
+                        val dialog: AlertDialog? = builder?.create()
+                        dialog?.show()
 
-                    // Center text
-                    val messageView : TextView? = dialog?.findViewById(android.R.id.message)
-                    messageView?.gravity = Gravity.CENTER
+                        // Center text
+                        val messageView: TextView? = dialog?.findViewById(android.R.id.message)
+                        messageView?.gravity = Gravity.CENTER
+                    }
                 }
                 .addOnFailureListener { e ->
                     // Task failed with an exception
-                    val errorToast = Toast.makeText(this, R.string.mlkit_failed, Toast.LENGTH_LONG)
-                    errorToast.setGravity(Gravity.CENTER, 0, 0)
-                    errorToast.show()
+                    showMLKitError()
                 }
         }
     }
@@ -226,6 +228,12 @@ class ReportPlantActivity : AppCompatActivity() {
         // Set stroke (border) and body color of button
         setStrokes(helpIdentifyButton, LIGHT_ORANGE_COLOR)
         setStrokes(reportPlantButton, LIGHT_ORANGE_COLOR)
+    }
+
+    private fun showMLKitError() {
+        val errorToast = Toast.makeText(this, R.string.mlkit_failed, Toast.LENGTH_LONG)
+        errorToast.setGravity(Gravity.CENTER, 0, 0)
+        errorToast.show()
     }
 
     companion object {

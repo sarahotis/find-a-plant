@@ -23,7 +23,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var databasePlants: DatabaseReference // For FireBase stuff
-    private var backToMainButton : Button? = null //TODO: eliminate code duplication
+    private var backToMainButton : Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,8 +117,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        /* Add all the plants in the Greenbelt database previously to the map */
-        databasePlants = database.getReference("Greenbelt Plants")
+        /* Add all the plants in the Plants Added To FB database previously to the map */
+        databasePlants = database.getReference("Plants Added To FB")
         databasePlants.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(postSnapshot in dataSnapshot.children) {
@@ -144,25 +144,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.w("Report Firebase", "Failed to read data", error.toException())
             }
         })
-
-        // TODO: cleanup here to see if this is still necessary
-        // Add a marker at plant location and move the camera
-        /*val marker = LatLng(latitude, longitude)
-        lateinit var userMarker : Marker
-        if (plantDesc.isEmpty()) {
-            userMarker = mMap.addMarker(MarkerOptions()
-                .position(marker)
-                .title(plantName)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
-        } else {
-            userMarker = mMap.addMarker(MarkerOptions()
-                .position(marker)
-                .title(plantName)
-                .snippet(plantDesc)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant))) // can also use R.drawable.flower
-        }
-        databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
-        userMarker.tag = imageEncoded // Encoded image is the tag*/
 
         // Max zoom out level (20 = buildings, 1 = world)
         mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
