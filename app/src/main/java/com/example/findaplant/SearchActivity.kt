@@ -73,8 +73,8 @@ class SearchActivity : AppCompatActivity() {
                         //If match found then move to description activity
                         val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
                         //Placing plant name and description into intent
-                        descriptionActivityIntent.putExtra(Intent.EXTRA_TEXT, description)
-                        descriptionActivityIntent.putExtra(Intent.EXTRA_TITLE, name)
+                        descriptionActivityIntent.putExtra(TITLE_KEY, description)
+                        descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
                         startActivity((descriptionActivityIntent))
 
                     }
@@ -97,5 +97,10 @@ class SearchActivity : AppCompatActivity() {
         searchText = findViewById(R.id.plant_search_text)
         searchPlantButton = findViewById(R.id.plant_search_button)
         ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
+    }
+
+    companion object{
+        const val TITLE_KEY = "TITLE_KEY"
+        const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
     }
 }
