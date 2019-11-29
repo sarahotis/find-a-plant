@@ -7,11 +7,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -20,11 +19,13 @@ import android.location.Location
 import android.net.Uri
 import android.provider.Settings
 import android.view.Gravity
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions
 
 class ReportPlantActivity : AppCompatActivity() {
 
@@ -34,7 +35,8 @@ class ReportPlantActivity : AppCompatActivity() {
     var reportPlantButton : Button? = null // Click to report plant and go to map
     var reportPlantEditText : EditText? = null // Place to enter plant name
     var reportDescEditText : EditText? = null // Place to enter optional plant description
-    var imageTaken = false // Determines if plant picture was taken
+    var imageTakenBool = false // Determines if plant picture was taken
+    lateinit var imageTaken : Bitmap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,9 +102,10 @@ class ReportPlantActivity : AppCompatActivity() {
         /** Replace current image view picture with thumbnail of image taken by user */
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
+            imageTaken = imageBitmap // Save image taken to global variable for later storage
             reportImageView?.setImageBitmap(imageBitmap)
             reportImageView?.rotation = 90f
-            imageTaken = true
+            imageTakenBool = true
         }
     }
 
@@ -129,18 +132,19 @@ class ReportPlantActivity : AppCompatActivity() {
             errorToast.show()
         }
 
-        if (plantName.isNotEmpty() && !imageTaken) { // No image taken, prompt user for entry
+        if (plantName.isNotEmpty() && !imageTakenBool) { // No image taken, prompt user for entry
             val errorToast = Toast.makeText(this, R.string.blank_plant_image, Toast.LENGTH_LONG)
             errorToast.setGravity(Gravity.CENTER, 0, 0)
             errorToast.show()
         }
 
-        if (plantName.isNotEmpty() && imageTaken) {
+        if (plantName.isNotEmpty() && imageTakenBool) {
             val mapsIntent = Intent(this, MapsActivity::class.java) // Intent to launch map with plant marker
 
             mapsIntent.putExtra(PLANT_NAME_KEY, plantName) // Store name for plant marker on map
             val plantDesc = reportDescEditText?.text.toString().trim() // Store extra info about plant
             mapsIntent.putExtra(PLANT_DESC_KEY, plantDesc)
+            mapsIntent.putExtra(IMAGE_KEY, imageTaken)
 
             // Get last location of phone for logging the plant location
             fusedLocationClient.lastLocation
@@ -151,10 +155,9 @@ class ReportPlantActivity : AppCompatActivity() {
                         // Store longitude and latitude for plant marker on map
                         mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
                         mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
+                        startActivity(mapsIntent)
                     }
                 }
-            // TODO: Add plant to database
-            startActivity(mapsIntent)
         }
     }
 
@@ -163,9 +166,56 @@ class ReportPlantActivity : AppCompatActivity() {
      */
     fun helpIdentifyOnClick(v: View) {
         animate(v) // Animate button color change
-        // TODO: Firebase MlKit stuff here
-    }
+        if (!imageTakenBool) { // No plant image to identify
+            val errorToast = Toast.makeText(this, R.string.blank_plant_image, Toast.LENGTH_LONG)
+            errorToast.setGravity(Gravity.CENTER, 0, 0)
+            errorToast.show()
+        } else {
+            // Rotate bitmap because thumbnails need to rotated 90 degrees
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val rotatedImage = Bitmap.createBitmap(imageTaken, 0, 0,
+                imageTaken.width, imageTaken.height, matrix, true)
+            // Prepare input image as FirebaseVisionImage
+            val image = FirebaseVisionImage.fromBitmap(rotatedImage)
+            // Configure and run the image labeler (on device)
+            val options = FirebaseVisionOnDeviceImageLabelerOptions.Builder()
+                 .setConfidenceThreshold(0.80f) // Minimum confidence
+                 .build()
+            val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler(options)
 
+            labeler.processImage(image)
+                .addOnSuccessListener { labels ->
+                    if (labels.isEmpty()) { // MLKit ran but no labels
+                        showMLKitError()
+                    } else {
+                        // Task completed successfully, get the potential labels
+                        val labelStringList = ArrayList<String>()
+                        for (label in labels) {
+                            labelStringList.add(label.text)
+                        }
+                        val labelString = labelStringList.joinToString(", ")
+
+                        // Alert user of potential labels with an AlertDialog
+                        val builder: AlertDialog.Builder? = this.let {
+                            AlertDialog.Builder(it)
+                        }
+                        // Display the AlertDialog with the potential labels
+                        builder?.setMessage(getString(R.string.mlkit_results, labelString))
+                        val dialog: AlertDialog? = builder?.create()
+                        dialog?.show()
+
+                        // Center text
+                        val messageView: TextView? = dialog?.findViewById(android.R.id.message)
+                        messageView?.gravity = Gravity.CENTER
+                    }
+                }
+                .addOnFailureListener { e ->
+                    // Task failed with an exception
+                    showMLKitError()
+                }
+        }
+    }
 
     private fun setupViews() {
         setContentView(R.layout.report_plant_layout)
@@ -180,6 +230,12 @@ class ReportPlantActivity : AppCompatActivity() {
         setStrokes(reportPlantButton, LIGHT_ORANGE_COLOR)
     }
 
+    private fun showMLKitError() {
+        val errorToast = Toast.makeText(this, R.string.mlkit_failed, Toast.LENGTH_LONG)
+        errorToast.setGravity(Gravity.CENTER, 0, 0)
+        errorToast.show()
+    }
+
     companion object {
         val TAG = "ReportPlantActivity"
         val MY_PERMISSIONS_REQUEST = 1
@@ -189,6 +245,7 @@ class ReportPlantActivity : AppCompatActivity() {
         const val LONGITUDE_KEY = "LONGITUDE_KEY"
         const val PLANT_NAME_KEY = "PLANT_NAME_KEY"
         const val PLANT_DESC_KEY = "PLANT_DESC_KEY"
+        const val IMAGE_KEY = "IMAGE_KEY"
 
         fun animate(v: View?) {
             val oldColor = Color.parseColor("#FFFFFF")

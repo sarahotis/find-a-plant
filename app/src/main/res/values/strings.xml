@@ -14,6 +14,7 @@
     <string name="description_plant">Description</string>
     <string name="blank_plant_name">Error: You must enter the name of the plant to continue!</string>
     <string name="blank_plant_image">Error: You must take a picture of the plant to continue!</string>
+    <string name="mlkit_failed">Error: Sorry, the plant could not be identified! Try with another image.</string>
     <string name="title_activity_registraton">RegistratonActivity</string>
     <string name="main_report_a_plant">Report A Plant</string>
     <string name="main_search_a_plant">Find A Plant</string>
@@ -22,6 +23,8 @@
     <string name="back_to_map">Return to Map</string>
     <string name="back_to_main">Return to Home</string>
     <string name="search_report_another">Find Or Report Another Plant?</string>
+    <string name="mlkit_results">Potential Labels: %1s</string>
+    <string name="ok">OK</string>
     <string name="register_instead">New here? Register Now!</string>
     <string name="login_instead">Already registered? Log in</string>
 </resources>
