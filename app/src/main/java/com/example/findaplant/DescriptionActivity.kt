@@ -23,8 +23,6 @@ class DescriptionActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.i(TAG, "Entering Description Activity")
-
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
         plantName = findViewById(R.id.plantName)
