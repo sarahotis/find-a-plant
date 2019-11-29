@@ -22,6 +22,9 @@ class DescriptionActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.i(TAG, "Entering Description Activity")
+
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
         plantName = findViewById(R.id.plantName)
@@ -40,27 +43,46 @@ class DescriptionActivity : AppCompatActivity(){
             startActivity(mainIntent)
         }
 
-        val plantIntent = intent
-        plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
+        // Intent can either come from SearchActivity or MapActivity
+        if(MapsActivity.TITLE_KEY != null){
 
-        // TODO: fix these null checks + make this work for user entered data
-        val descriptionText = plantIntent.getStringExtra(MapsActivity.DESCRIPTION_KEY)
-        if (descriptionText != null) {
-            plantDescription?.text = descriptionText
-            plantDescription?.visibility = View.VISIBLE
-        }
+            val plantIntent = intent
+            plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
 
-        val plantPicSource = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
-        // kinda hacky but whatever atm
-        if (plantPicSource.contains("https")) { // URL
-            Glide.with(this)
-                .load(plantPicSource)
-                .into(plantImage!!)
-        } else { // Base64 encoded
-            val byteArray = Base64.decode(plantPicSource, Base64.DEFAULT)
-            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-            plantImage?.setImageBitmap(bitmap)
-            plantImage?.rotation = 90f
+            // TODO: fix these null checks + make this work for user entered data
+            val descriptionText = plantIntent.getStringExtra(MapsActivity.DESCRIPTION_KEY)
+            if (descriptionText != null) {
+                plantDescription?.text = descriptionText
+                plantDescription?.visibility = View.VISIBLE
+            }
+
+            val plantPicSource = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
+            // kinda hacky but whatever atm
+            if (plantPicSource.contains("https")) { // URL
+                Glide.with(this)
+                    .load(plantPicSource)
+                    .into(plantImage!!)
+            } else { // Base64 encoded
+                val byteArray = Base64.decode(plantPicSource, Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                plantImage?.setImageBitmap(bitmap)
+                plantImage?.rotation = 90f
+            }
+        } else {
+            val plantIntent = intent
+            plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
+
+            // TODO: fix these null checks + make this work for user entered data
+            val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
+            if (descriptionText != null) {
+                plantDescription?.text = descriptionText
+                plantDescription?.visibility = View.VISIBLE
+            }
         }
+    }
+
+    companion object{
+        val TAG = "Description Activity"
+
     }
 }
