@@ -9,11 +9,13 @@ android:orientation="vertical"
 android:padding="16dp"
 tools:context=".LoginActivity">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Account login"/>
-<EditText
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Account login" />
+
+    <EditText
     android:id="@+id/email"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -31,6 +33,16 @@ tools:context=".LoginActivity">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Login" />
+
+<Button
+    android:id="@+id/registerButton"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
+    android:background="@null"
+    android:forceDarkAllowed="false"
+    android:text="@string/register_instead"
+    android:textColor="@android:color/black" />
 
 <ProgressBar
     android:id="@+id/progressBar"

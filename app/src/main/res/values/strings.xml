@@ -25,4 +25,6 @@
     <string name="search_report_another">Find Or Report Another Plant?</string>
     <string name="mlkit_results">Potential Labels: %1s</string>
     <string name="ok">OK</string>
+    <string name="register_instead">New here? Register Now!</string>
+    <string name="login_instead">Already registered? Log in</string>
 </resources>

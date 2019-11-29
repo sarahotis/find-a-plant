@@ -21,6 +21,7 @@ class RegistrationActivity : AppCompatActivity() {
     private var passwordTV: EditText? = null
     private var regBtn: Button? = null
     private var progressBar: ProgressBar? = null
+    private var loginButton : Button? = null
 
     private var mAuth: FirebaseAuth? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +33,12 @@ class RegistrationActivity : AppCompatActivity() {
         initializeUI()
 
         regBtn!!.setOnClickListener { registerNewUser() }
+
+        loginButton = findViewById(R.id.loginButton)
+        loginButton?.setOnClickListener {
+            val mainIntent = Intent(this, LoginActivity::class.java)
+            startActivity(mainIntent)
+        }
     }
 
     private fun registerNewUser() {

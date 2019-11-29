@@ -148,7 +148,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Max zoom out level (20 = buildings, 1 = world)
         mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
         //Camera initially appears at zoom level 15
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, INITIAL_ZOOM_LEVEL));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, INITIAL_ZOOM_LEVEL));
 
         mMap.setOnInfoWindowClickListener {
             val descriptionIntent = Intent(this, DescriptionActivity::class.java)
