@@ -22,18 +22,12 @@ class DescriptionActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-<<<<<<< HEAD
-=======
-        val searchActivityIntent = intent
->>>>>>> 13ee32d4ad02d3812741167a6417babeb4ae82a0
+
         Log.i(TAG, "Entering Description Activity")
 
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
         plantName = findViewById(R.id.plantName)
-        plantName!!.setText("NEW TEXTTT")
-        Log.i(TAG, "Plant name is " + plantName!!.text.toString())
-        Log.i(TAG, "Plant name is " + plantName!!.text)
         plantDescription = findViewById(R.id.plantDescription)
         backToMapButton = findViewById(R.id.backToMapButton)
         ReportPlantActivity.setStrokes(backToMapButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
@@ -90,8 +84,6 @@ class DescriptionActivity : AppCompatActivity(){
 
     }
 
-    companion object{
-        val TAG = "Description Activity"
-    }
+
 
 }
