@@ -24,4 +24,5 @@
     <string name="search_report_another">Find Or Report Another Plant?</string>
     <string name="register_instead">New here? Register Now!</string>
     <string name="login_instead">Already registered? Log in</string>
+    <string name="find_plant_on_map">Find Plant On Map</string>
 </resources>

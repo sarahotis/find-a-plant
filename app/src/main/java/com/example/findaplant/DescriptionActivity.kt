@@ -44,9 +44,11 @@ class DescriptionActivity : AppCompatActivity(){
         }
 
         // Intent can either come from SearchActivity or MapActivity
-        if(MapsActivity.TITLE_KEY != null){
+        val plantIntent = intent
+        Log.i(TAG, "MapsActivity " + plantIntent.getStringExtra(MapsActivity.TITLE_KEY).toString().isNotEmpty())
+        if(plantIntent.getStringExtra(MapsActivity.TITLE_KEY).toString().isNotEmpty()){
+            Log.i(TAG, "In Map Activity")
 
-            val plantIntent = intent
             plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
 
             // TODO: fix these null checks + make this work for user entered data
@@ -64,7 +66,8 @@ class DescriptionActivity : AppCompatActivity(){
             }
 
         }else{
-            val plantIntent = intent
+            Log.i(TAG, "Intent came from searchActivity")
+
             plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
 
             // TODO: fix these null checks + make this work for user entered data
