@@ -7,11 +7,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -20,10 +19,13 @@ import android.location.Location
 import android.net.Uri
 import android.provider.Settings
 import android.view.Gravity
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions
 
 class ReportPlantActivity : AppCompatActivity() {
 
@@ -164,9 +166,54 @@ class ReportPlantActivity : AppCompatActivity() {
      */
     fun helpIdentifyOnClick(v: View) {
         animate(v) // Animate button color change
-        // TODO: Firebase MlKit stuff here
-    }
+        if (!imageTakenBool) { // No plant image to identify
+            val errorToast = Toast.makeText(this, R.string.blank_plant_image, Toast.LENGTH_LONG)
+            errorToast.setGravity(Gravity.CENTER, 0, 0)
+            errorToast.show()
+        } else {
+            // Rotate bitmap because thumbnails need to rotated 90 degrees
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val rotatedImage = Bitmap.createBitmap(imageTaken, 0, 0,
+                imageTaken.width, imageTaken.height, matrix, true)
+            // Prepare input image as FirebaseVisionImage
+            val image = FirebaseVisionImage.fromBitmap(rotatedImage)
+            // Configure and run the image labeler (on device)
+            val options = FirebaseVisionOnDeviceImageLabelerOptions.Builder()
+                 .setConfidenceThreshold(0.80f) // Minimum confidence
+                 .build()
+            val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler(options)
 
+            labeler.processImage(image)
+                .addOnSuccessListener { labels ->
+                    // Task completed successfully, get the potential labels
+                    val labelStringList = ArrayList<String>()
+                    for (label in labels) {
+                        labelStringList.add(label.text)
+                    }
+                    val labelString = labelStringList.joinToString(", ")
+
+                    // Alert user of potential labels with an AlertDialog
+                    val builder: AlertDialog.Builder? = this.let {
+                        AlertDialog.Builder(it)
+                    }
+                    // Display the AlertDialog with the potential labels
+                    builder?.setMessage(getString(R.string.mlkit_results ,labelString))
+                    val dialog: AlertDialog? = builder?.create()
+                    dialog?.show()
+
+                    // Center text
+                    val messageView : TextView? = dialog?.findViewById(android.R.id.message)
+                    messageView?.gravity = Gravity.CENTER
+                }
+                .addOnFailureListener { e ->
+                    // Task failed with an exception
+                    val errorToast = Toast.makeText(this, R.string.mlkit_failed, Toast.LENGTH_LONG)
+                    errorToast.setGravity(Gravity.CENTER, 0, 0)
+                    errorToast.show()
+                }
+        }
+    }
 
     private fun setupViews() {
         setContentView(R.layout.report_plant_layout)
