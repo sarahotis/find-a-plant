@@ -46,45 +46,61 @@ class DescriptionActivity : AppCompatActivity(){
         }
         val plantIntent = intent
         // Intent can either come from SearchActivity or MapActivity
-        if(plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null && plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()){
+        if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null && plantIntent.getStringExtra(
+                MapsActivity.TITLE_KEY
+            ).isNotEmpty()
+        ) {
 
-           Log.i(TAG, "Map Activity Intent Started")
-            plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
+            Log.i(TAG, "Map Activity Intent Started")
+            val plantIntent = intent
+            Log.i(
+                TAG,
+                "MapsActivity " + plantIntent.getStringExtra(MapsActivity.TITLE_KEY).toString().isNotEmpty()
+            )
+            if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY).toString().isNotEmpty()) {
+                Log.i(TAG, "In Map Activity")
 
-            // TODO: fix these null checks + make this work for user entered data
-            val descriptionText = plantIntent.getStringExtra(MapsActivity.DESCRIPTION_KEY)
-            if (descriptionText != null) {
-                plantDescription?.text = descriptionText
-                plantDescription?.visibility = View.VISIBLE
-            }
+                plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
 
-            val plantPicSource = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
-            // kinda hacky but whatever atm
-            if (plantPicSource.contains("https")) { // URL
-                Glide.with(this)
-                    .load(plantPicSource)
-                    .into(plantImage!!)
-            } else { // Base64 encoded
-                val byteArray = Base64.decode(plantPicSource, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                plantImage?.setImageBitmap(bitmap)
-                plantImage?.rotation = 90f
-            }
-        } else {
-            Log.i(TAG, "Search Activity Intent started")
-            plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
+                // TODO: fix these null checks + make this work for user entered data
+                val descriptionText = plantIntent.getStringExtra(MapsActivity.DESCRIPTION_KEY)
+                if (descriptionText != null) {
+                    plantDescription?.text = descriptionText
+                    plantDescription?.visibility = View.VISIBLE
+                }
 
-            // TODO: fix these null checks + make this work for user entered data
-            val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
-            if (descriptionText != null) {
-                plantDescription?.text = descriptionText
-                plantDescription?.visibility = View.VISIBLE
+                val plantPicSource = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
+                // kinda hacky but whatever atm
+                if (plantPicSource.contains("https")) { // URL
+                    Glide.with(this)
+                        .load(plantPicSource)
+                        .into(plantImage!!)
+                } else { // Base64 encoded
+                    val byteArray = Base64.decode(plantPicSource, Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                    plantImage?.setImageBitmap(bitmap)
+                    plantImage?.rotation = 90f
+                }
+
+
+            } else {
+                Log.i(TAG, "Intent came from searchActivity")
+
+
+                plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
+
+                // TODO: fix these null checks + make this work for user entered data
+                val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
+                if (descriptionText != null) {
+                    plantDescription?.text = descriptionText
+                    plantDescription?.visibility = View.VISIBLE
+                }
             }
         }
     }
 
     companion object{
-        val TAG = "Description Activity"
+        const val TAG = "Description Activity"
 
     }
 }

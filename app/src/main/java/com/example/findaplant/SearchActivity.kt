@@ -80,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
                         //Placing plant name and description into intent
                         descriptionActivityIntent.putExtra(TITLE_KEY, description)
                         descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
-                        startActivity((descriptionActivityIntent))
+                        startActivity(descriptionActivityIntent)
 
                     }
 
