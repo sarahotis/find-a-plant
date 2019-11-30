@@ -18,6 +18,7 @@ class SearchActivity : AppCompatActivity() {
     internal var searchText: EditText? = null
     private lateinit var databasePlants: DatabaseReference
     private lateinit var searchPlantButton: Button
+    private lateinit var backToMainButton: Button
     private lateinit var plantToFind: String
     private var found: Int = 0
 
@@ -33,7 +34,11 @@ class SearchActivity : AppCompatActivity() {
         databasePlants = database.getReference("Plants Added To FB")
         Log.i("Firebase", "Database Plants Added to FB referenced")
 
-        //get search text
+        //Go back to main button is clicked
+        backToMainButton.setOnClickListener {
+            val mainActivityIntent = Intent(this@SearchActivity, MainActivity::class.java)
+            startActivity(mainActivityIntent)
+        }
 
 
 
@@ -52,11 +57,6 @@ class SearchActivity : AppCompatActivity() {
                 searchPlant()
             }
         }
-
-
-//        //Making a plant object to add to Firebase
-//        var plant = Plant("Daisy", "White petals, yellow inside", "Ngan")
-//        databasePlants.setValue(plant)
 
     }
 
@@ -108,6 +108,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initializeViews() {
         searchText = findViewById(R.id.plant_search_text)
         searchPlantButton = findViewById(R.id.plant_search_button)
+        backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 
