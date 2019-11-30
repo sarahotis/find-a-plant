@@ -19,6 +19,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var databasePlants: DatabaseReference
     private lateinit var searchPlantButton: Button
     private lateinit var plantToFind: String
+    private var found: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +27,11 @@ class SearchActivity : AppCompatActivity() {
         initializeViews()
         Log.i("SearchActivity", "OnCreate launched")
 
+
         //get instance of database
         val database = FirebaseDatabase.getInstance()
-        databasePlants = database.getReference("Greenbelt Plants")
-        Log.i("Firebase", "Database Greenbelt plants referenced")
+        databasePlants = database.getReference("Plants Added To FB")
+        Log.i("Firebase", "Database Plants Added to FB referenced")
 
         //get search text
 
@@ -60,6 +62,8 @@ class SearchActivity : AppCompatActivity() {
 
     //Search firebase for plant if found then start DescriptionActivity. Else make toast that plant
     //isn't found
+
+    //TODO: Have search look at user inputs and iNaturalist data
     private fun searchPlant(){
         Log.i("Search Activity", "Entered searchPlant function")
         databasePlants.addValueEventListener(object : ValueEventListener {
@@ -69,6 +73,7 @@ class SearchActivity : AppCompatActivity() {
                     val name = postSnapshot.child("common_name").value as String
                     val description = postSnapshot.child("description").value as String
                     if(name.compareTo(plantToFind) === 0){
+                        found = 1
                         Log.i("Search Activity", "We have a match!" )
                         //If match found then move to description activity
                         val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
@@ -81,6 +86,12 @@ class SearchActivity : AppCompatActivity() {
 
                 }
 
+                if(found == 0){
+                    /*** If plant not found show Toast message ***/
+                    Log.i("Search Activity", "End of firebase loop")
+                    Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT).show()
+                }
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -88,8 +99,9 @@ class SearchActivity : AppCompatActivity() {
             }
         })
 
-        Log.i("Search Activity", "End of firebase loop")
-        Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
+
+
+
 
     }
 

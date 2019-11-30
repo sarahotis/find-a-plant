@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import android.util.Log
 
 
 class DescriptionActivity : AppCompatActivity(){
@@ -22,6 +23,7 @@ class DescriptionActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "Entering description activity")
 
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
@@ -30,21 +32,23 @@ class DescriptionActivity : AppCompatActivity(){
         backToMapButton = findViewById(R.id.backToMapButton)
         ReportPlantActivity.setStrokes(backToMapButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMapButton?.setOnClickListener {
+            Log.i(TAG, "Go to map button clicked")
             ReportPlantActivity.animate(it)
             finish()
         }
         backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(backToMainButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMainButton?.setOnClickListener {
-            ReportPlantActivity.animate(it)
+            //ReportPlantActivity.animate(it)
+            Log.i(TAG, "Main button clicked")
             val mainIntent = Intent(this, MainActivity::class.java)
             startActivity(mainIntent)
         }
-
+        val plantIntent = intent
         // Intent can either come from SearchActivity or MapActivity
-        if(MapsActivity.TITLE_KEY != null){
+        if(plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null && plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()){
 
-            val plantIntent = intent
+           Log.i(TAG, "Map Activity Intent Started")
             plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
 
             // TODO: fix these null checks + make this work for user entered data
@@ -67,7 +71,7 @@ class DescriptionActivity : AppCompatActivity(){
                 plantImage?.rotation = 90f
             }
         } else {
-            val plantIntent = intent
+            Log.i(TAG, "Search Activity Intent started")
             plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
 
             // TODO: fix these null checks + make this work for user entered data
