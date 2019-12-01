@@ -73,8 +73,9 @@ class SearchActivity : AppCompatActivity() {
                     val name = postSnapshot.child("common_name").value as String
                     val description = postSnapshot.child("description").value as String
                     if(name.compareTo(plantToFind) === 0){
-                        val longitude = postSnapshot.child("longitude").value as String
-                        val latitude = postSnapshot.child("latitude").value as String
+                        val longitude = postSnapshot.child("longitude").value as Double
+                        val latitude = postSnapshot.child("latitude").value as Double
+                        val imageURL = postSnapshot.child("image_url").value as String
                         found = 1
                         Log.i("Search Activity", "We have a match!" )
                         //If match found then move to description activity
@@ -84,6 +85,7 @@ class SearchActivity : AppCompatActivity() {
                         descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
                         descriptionActivityIntent.putExtra(LATITUDE, latitude)
                         descriptionActivityIntent.putExtra(LONGITUDE, longitude)
+                        descriptionActivityIntent.putExtra(IMAGE_KEY, imageURL)
                         startActivity(descriptionActivityIntent)
 
                     }
@@ -121,5 +123,6 @@ class SearchActivity : AppCompatActivity() {
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
         const val LATITUDE = "LATITUDE"
         const val LONGITUDE = "LONGITUDE"
+        const val IMAGE_KEY = "IMAGE_KEY"
     }
 }
