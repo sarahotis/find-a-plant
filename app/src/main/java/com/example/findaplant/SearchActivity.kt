@@ -17,6 +17,7 @@ class SearchActivity : AppCompatActivity() {
     //search will tap into the Firebase
     internal var searchText: EditText? = null
     private lateinit var databasePlants: DatabaseReference
+    private lateinit var databasePlantsByUser: DatabaseReference
     private lateinit var searchPlantButton: Button
     private lateinit var backToMainButton: Button
     private lateinit var plantToFind: String
@@ -28,11 +29,15 @@ class SearchActivity : AppCompatActivity() {
         initializeViews()
         Log.i("SearchActivity", "OnCreate launched")
 
+        //TODO: Account for upper/lower case letters. white spaces
+
 
         //get instance of database
         val database = FirebaseDatabase.getInstance()
+        databasePlantsByUser = database.getReference("User Plants")
         databasePlants = database.getReference("Plants Added To FB")
         Log.i("Firebase", "Database Plants Added to FB referenced")
+
 
         //Go back to main button is clicked
         backToMainButton.setOnClickListener {
@@ -54,7 +59,9 @@ class SearchActivity : AppCompatActivity() {
                 pleaseEnterPlantText.show()
             }else{
                 //call searchPlant method
-                searchPlant()
+                searchPlantInputs()
+                searchUserInputs()
+
             }
         }
 
@@ -62,32 +69,23 @@ class SearchActivity : AppCompatActivity() {
 
     //Search firebase for plant if found then start DescriptionActivity. Else make toast that plant
     //isn't found
-
-    //TODO: Have search look at user inputs and iNaturalist data
-    private fun searchPlant(){
-        Log.i("Search Activity", "Entered searchPlant function")
-        databasePlants.addValueEventListener(object : ValueEventListener {
+    private fun searchUserInputs(){
+        Log.i(TAG, "search user inputs")
+        databasePlantsByUser.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.i(TAG, "Searching through user inputs")
                 for(postSnapshot in dataSnapshot.children){
-                    Log.i("Search Activity", "Through loop")
                     val name = postSnapshot.child("common_name").value as String
                     val description = postSnapshot.child("description").value as String
                     if(name.compareTo(plantToFind) === 0){
-                        val longitude = postSnapshot.child("longitude").value as String
-                        val latitude = postSnapshot.child("latitude").value as String
+                        val longitude = postSnapshot.child("longitude").value as Double
+                        val latitude = postSnapshot.child("latitude").value as Double
+                        val imageURL = postSnapshot.child("image").value as String
                         found = 1
-                        Log.i("Search Activity", "We have a match!" )
-                        //If match found then move to description activity
-                        val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
-                        //Placing plant name and description into intent
-                        descriptionActivityIntent.putExtra(TITLE_KEY, description)
-                        descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
-                        descriptionActivityIntent.putExtra(LATITUDE, latitude)
-                        descriptionActivityIntent.putExtra(LONGITUDE, longitude)
-                        startActivity(descriptionActivityIntent)
-
+                        Log.i("Search Activity", "We have a match! From User Input" )
+                        //If match found then call method to start description intent
+                        callDescriptionIntent(description, name, latitude, longitude, imageURL)
                     }
-
                 }
 
                 if(found == 0){
@@ -95,17 +93,52 @@ class SearchActivity : AppCompatActivity() {
                     Log.i("Search Activity", "End of firebase loop")
                     Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT).show()
                 }
-
             }
 
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         })
+    }
 
+    //TODO: Have search look at user inputs and iNaturalist data
+    private fun searchPlantInputs(){
+        Log.i("Search Activity", "Entered searchPlant function")
+        databasePlants.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for(postSnapshot in dataSnapshot.children){
+                    val name = postSnapshot.child("common_name").value as String
+                    val description = postSnapshot.child("description").value as String
+                    if(name.compareTo(plantToFind) === 0){
+                        val longitude = postSnapshot.child("longitude").value as Double
+                        val latitude = postSnapshot.child("latitude").value as Double
+                        val imageURL = postSnapshot.child("image_url").value as String
+                        found = 1
+                        Log.i("Search Activity", "We have a match! From iNaturalist" )
+                        //If match found then call method to start description intent
+                        callDescriptionIntent(description, name, latitude, longitude, imageURL)
+                    }
+                }
+            }
 
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
+    }
 
+    //Method called to start description intent with given parameters
+    private fun callDescriptionIntent(description : String, name : String, latitude : Double, longitude : Double,
+                                      imageURL : String){
 
+        val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
+        //Placing plant name and description into intent
+        descriptionActivityIntent.putExtra(TITLE_KEY, description)
+        descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
+        descriptionActivityIntent.putExtra(LATITUDE, latitude)
+        descriptionActivityIntent.putExtra(LONGITUDE, longitude)
+        descriptionActivityIntent.putExtra(IMAGE_KEY, imageURL)
+        startActivity(descriptionActivityIntent)
 
     }
 
@@ -117,9 +150,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object{
+        const val TAG = "Search Activity"
         const val TITLE_KEY = "TITLE_KEY"
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
         const val LATITUDE = "LATITUDE"
         const val LONGITUDE = "LONGITUDE"
+        const val IMAGE_KEY = "IMAGE_KEY"
     }
 }

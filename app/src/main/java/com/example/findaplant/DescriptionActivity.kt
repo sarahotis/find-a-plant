@@ -21,10 +21,17 @@ class DescriptionActivity : AppCompatActivity(){
     private var backToMapButton : Button? = null
     private var backToMainButton : Button? = null
     private var cameFromSearchActivity: Boolean = false
+    private lateinit var plantIntent: Intent
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "Entering description activity")
+
+        //Get intent
+        plantIntent = intent
+
+        //TODO: Show image of plant on description
 
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
@@ -33,19 +40,7 @@ class DescriptionActivity : AppCompatActivity(){
         backToMapButton = findViewById(R.id.backToMapButton)
         ReportPlantActivity.setStrokes(backToMapButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMapButton?.setOnClickListener {
-            if(!cameFromSearchActivity){
-                Log.i(TAG, "Go to map button clicked")
-                ReportPlantActivity.animate(it)
-                finish()
-            }else{
-                //Intent came from Search Activity
-                //Start map activity
-                //get latitude and longitude from Firebase to put into map intent
-                //get name, description and image taken to put into map intent
-                //then call map activity
-
-            }
-
+            goToMap(it)
         }
         backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(backToMainButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
@@ -55,7 +50,7 @@ class DescriptionActivity : AppCompatActivity(){
             val mainIntent = Intent(this, MainActivity::class.java)
             startActivity(mainIntent)
         }
-        val plantIntent = intent
+
         // Intent can either come from SearchActivity or MapActivity
         if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null &&
             plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()) {
@@ -95,12 +90,54 @@ class DescriptionActivity : AppCompatActivity(){
                 plantDescription?.text = descriptionText
                 plantDescription?.visibility = View.VISIBLE
             }
+            Log.i(TAG, "Loads plant url into plant image")
+            val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
+            Glide.with(this)
+                .load(imageURL)
+                .into(plantImage!!)
         }
+
+    }
+
+    private fun goToMap(it:View){
+        if(!cameFromSearchActivity){
+            Log.i(TAG, "Go to map button clicked")
+            ReportPlantActivity.animate(it)
+            finish()
+        }else{
+            //Intent came from Search Activity
+            //Start map activity
+            //get latitude and longitude from Firebase to put into map intent
+            //get name, description and image taken to put into map intent
+            //then call map activity
+            val mapIntent = Intent(this, MapsActivity::class.java)
+            mapIntent.putExtra(PLANT_NAME_KEY, plantName.toString())
+            mapIntent.putExtra(PLANT_DESC_KEY, plantDescription.toString())
+            val latitude = plantIntent.getDoubleExtra(SearchActivity.LATITUDE, DEFAULT_LAT)
+            val longitude = plantIntent.getDoubleExtra(SearchActivity.LONGITUDE, DEFAULT_LONG)
+            Log.i(TAG, "Latitude " + latitude)
+            Log.i(TAG, "Longitude " + longitude)
+            mapIntent.putExtra(LATITUDE_KEY, latitude)
+            mapIntent.putExtra(LONGITUDE_KEY, longitude)
+            val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
+            Log.i(TAG, "Image URL is " + imageURL)
+            mapIntent.putExtra(IMAGE_KEY, imageURL)
+            startActivity(mapIntent)
+
+        }
+
     }
 
 
     companion object{
         const val TAG = "Description Activity"
+        const val LATITUDE_KEY = "LATITUDE_KEY"
+        const val LONGITUDE_KEY = "LONGITUDE_KEY"
+        const val PLANT_NAME_KEY = "PLANT_NAME_KEY"
+        const val PLANT_DESC_KEY = "PLANT_DESC_KEY"
+        const val IMAGE_KEY = "IMAGE_KEY"
+        const val DEFAULT_LAT = 38.9858
+        const val DEFAULT_LONG = -76.9373
 
     }
 }
