@@ -73,6 +73,8 @@ class SearchActivity : AppCompatActivity() {
                     val name = postSnapshot.child("common_name").value as String
                     val description = postSnapshot.child("description").value as String
                     if(name.compareTo(plantToFind) === 0){
+                        val longitude = postSnapshot.child("longitude").value as String
+                        val latitude = postSnapshot.child("latitude").value as String
                         found = 1
                         Log.i("Search Activity", "We have a match!" )
                         //If match found then move to description activity
@@ -80,6 +82,8 @@ class SearchActivity : AppCompatActivity() {
                         //Placing plant name and description into intent
                         descriptionActivityIntent.putExtra(TITLE_KEY, description)
                         descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
+                        descriptionActivityIntent.putExtra(LATITUDE, latitude)
+                        descriptionActivityIntent.putExtra(LONGITUDE, longitude)
                         startActivity(descriptionActivityIntent)
 
                     }
@@ -115,5 +119,7 @@ class SearchActivity : AppCompatActivity() {
     companion object{
         const val TITLE_KEY = "TITLE_KEY"
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
+        const val LATITUDE = "LATITUDE"
+        const val LONGITUDE = "LONGITUDE"
     }
 }

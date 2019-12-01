@@ -20,6 +20,7 @@ class DescriptionActivity : AppCompatActivity(){
     private var plantDescription : TextView? = null
     private var backToMapButton : Button? = null
     private var backToMainButton : Button? = null
+    private var cameFromSearchActivity: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +33,19 @@ class DescriptionActivity : AppCompatActivity(){
         backToMapButton = findViewById(R.id.backToMapButton)
         ReportPlantActivity.setStrokes(backToMapButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMapButton?.setOnClickListener {
-            Log.i(TAG, "Go to map button clicked")
-            ReportPlantActivity.animate(it)
-            finish()
+            if(!cameFromSearchActivity){
+                Log.i(TAG, "Go to map button clicked")
+                ReportPlantActivity.animate(it)
+                finish()
+            }else{
+                //Intent came from Search Activity
+                //Start map activity
+                //get latitude and longitude from Firebase to put into map intent
+                //get name, description and image taken to put into map intent
+                //then call map activity
+
+            }
+
         }
         backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(backToMainButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
@@ -74,19 +85,18 @@ class DescriptionActivity : AppCompatActivity(){
             }
 
         } else {
-                Log.i(TAG, "Intent came from searchActivity")
+            cameFromSearchActivity = true
+            Log.i(TAG, "Intent came from searchActivity")
 
-
-                plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
-
+            plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
                 // TODO: fix these null checks + make this work for user entered data
-                val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
-                if (descriptionText != null) {
-                    plantDescription?.text = descriptionText
-                    plantDescription?.visibility = View.VISIBLE
-                }
+            val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
+            if (descriptionText != null) {
+                plantDescription?.text = descriptionText
+                plantDescription?.visibility = View.VISIBLE
             }
         }
+    }
 
 
     companion object{
