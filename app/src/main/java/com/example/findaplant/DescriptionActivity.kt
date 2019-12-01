@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import android.util.Log
 
 
 class DescriptionActivity : AppCompatActivity(){
@@ -19,9 +20,11 @@ class DescriptionActivity : AppCompatActivity(){
     private var plantDescription : TextView? = null
     private var backToMapButton : Button? = null
     private var backToMainButton : Button? = null
+    private var cameFromSearchActivity: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "Entering description activity")
 
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
@@ -30,21 +33,35 @@ class DescriptionActivity : AppCompatActivity(){
         backToMapButton = findViewById(R.id.backToMapButton)
         ReportPlantActivity.setStrokes(backToMapButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMapButton?.setOnClickListener {
-            ReportPlantActivity.animate(it)
-            finish()
+            if(!cameFromSearchActivity){
+                Log.i(TAG, "Go to map button clicked")
+                ReportPlantActivity.animate(it)
+                finish()
+            }else{
+                //Intent came from Search Activity
+                //Start map activity
+                //get latitude and longitude from Firebase to put into map intent
+                //get name, description and image taken to put into map intent
+                //then call map activity
+
+            }
+
         }
         backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(backToMainButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMainButton?.setOnClickListener {
-            ReportPlantActivity.animate(it)
+            //ReportPlantActivity.animate(it)
+            Log.i(TAG, "Main button clicked")
             val mainIntent = Intent(this, MainActivity::class.java)
             startActivity(mainIntent)
         }
-
+        val plantIntent = intent
         // Intent can either come from SearchActivity or MapActivity
-        if(MapsActivity.TITLE_KEY != null){
+        if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null &&
+            plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()) {
 
-            val plantIntent = intent
+            Log.i(TAG, "Map Activity Intent Started")
+
             plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
 
             // TODO: fix these null checks + make this work for user entered data
@@ -66,11 +83,13 @@ class DescriptionActivity : AppCompatActivity(){
                 plantImage?.setImageBitmap(bitmap)
                 plantImage?.rotation = 90f
             }
-        } else {
-            val plantIntent = intent
-            plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
 
-            // TODO: fix these null checks + make this work for user entered data
+        } else {
+            cameFromSearchActivity = true
+            Log.i(TAG, "Intent came from searchActivity")
+
+            plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
+                // TODO: fix these null checks + make this work for user entered data
             val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
             if (descriptionText != null) {
                 plantDescription?.text = descriptionText
@@ -79,8 +98,9 @@ class DescriptionActivity : AppCompatActivity(){
         }
     }
 
+
     companion object{
-        val TAG = "Description Activity"
+        const val TAG = "Description Activity"
 
     }
 }

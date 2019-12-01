@@ -18,7 +18,9 @@ class SearchActivity : AppCompatActivity() {
     internal var searchText: EditText? = null
     private lateinit var databasePlants: DatabaseReference
     private lateinit var searchPlantButton: Button
+    private lateinit var backToMainButton: Button
     private lateinit var plantToFind: String
+    private var found: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,12 +28,17 @@ class SearchActivity : AppCompatActivity() {
         initializeViews()
         Log.i("SearchActivity", "OnCreate launched")
 
+
         //get instance of database
         val database = FirebaseDatabase.getInstance()
-        databasePlants = database.getReference("Greenbelt Plants")
-        Log.i("Firebase", "Database Greenbelt plants referenced")
+        databasePlants = database.getReference("Plants Added To FB")
+        Log.i("Firebase", "Database Plants Added to FB referenced")
 
-        //get search text
+        //Go back to main button is clicked
+        backToMainButton.setOnClickListener {
+            val mainActivityIntent = Intent(this@SearchActivity, MainActivity::class.java)
+            startActivity(mainActivityIntent)
+        }
 
 
 
@@ -51,15 +58,12 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-
-//        //Making a plant object to add to Firebase
-//        var plant = Plant("Daisy", "White petals, yellow inside", "Ngan")
-//        databasePlants.setValue(plant)
-
     }
 
     //Search firebase for plant if found then start DescriptionActivity. Else make toast that plant
     //isn't found
+
+    //TODO: Have search look at user inputs and iNaturalist data
     private fun searchPlant(){
         Log.i("Search Activity", "Entered searchPlant function")
         databasePlants.addValueEventListener(object : ValueEventListener {
@@ -69,16 +73,27 @@ class SearchActivity : AppCompatActivity() {
                     val name = postSnapshot.child("common_name").value as String
                     val description = postSnapshot.child("description").value as String
                     if(name.compareTo(plantToFind) === 0){
+                        val longitude = postSnapshot.child("longitude").value as String
+                        val latitude = postSnapshot.child("latitude").value as String
+                        found = 1
                         Log.i("Search Activity", "We have a match!" )
                         //If match found then move to description activity
                         val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
                         //Placing plant name and description into intent
                         descriptionActivityIntent.putExtra(TITLE_KEY, description)
                         descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
-                        startActivity((descriptionActivityIntent))
+                        descriptionActivityIntent.putExtra(LATITUDE, latitude)
+                        descriptionActivityIntent.putExtra(LONGITUDE, longitude)
+                        startActivity(descriptionActivityIntent)
 
                     }
 
+                }
+
+                if(found == 0){
+                    /*** If plant not found show Toast message ***/
+                    Log.i("Search Activity", "End of firebase loop")
+                    Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT).show()
                 }
 
             }
@@ -88,19 +103,23 @@ class SearchActivity : AppCompatActivity() {
             }
         })
 
-        Log.i("Search Activity", "End of firebase loop")
-        Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
+
+
+
 
     }
 
     private fun initializeViews() {
         searchText = findViewById(R.id.plant_search_text)
         searchPlantButton = findViewById(R.id.plant_search_button)
+        backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 
     companion object{
         const val TITLE_KEY = "TITLE_KEY"
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
+        const val LATITUDE = "LATITUDE"
+        const val LONGITUDE = "LONGITUDE"
     }
 }

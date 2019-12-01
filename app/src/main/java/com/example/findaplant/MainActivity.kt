@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.util.EventLogTags
 import android.widget.Button
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity() {
 
-
+    private var mAuth: FirebaseAuth? = null
     internal var reportBtn: Button? = null
 //    internal var descriptionBtn: Button? = null
     internal var searchBtn: Button? = null
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initializeViews()
+        Log.i(TAG, "In Main Activity")
 
         reportBtn!!.setOnClickListener {
             ReportPlantActivity.animate(it)
@@ -29,12 +31,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-//        descriptionBtn!!.setOnClickListener{
-//            Log.i("Description", "activity start")
-//            ReportPlantActivity.animate(it)
-//            startActivity(Intent(this@MainActivity, DescriptionActivity::class.java))
-//
-//        }
+
+
 
         searchBtn!!.setOnClickListener {
             Log.i("Search", "Search Activity Started")
@@ -47,15 +45,26 @@ class MainActivity : AppCompatActivity() {
     private fun initializeViews() {
         reportBtn = findViewById(R.id.report)
         ReportPlantActivity.setStrokes(reportBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
-//        descriptionBtn = findViewById(R.id.description)
-//        ReportPlantActivity.setStrokes(descriptionBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         searchBtn = findViewById(R.id.centered_search)
         ReportPlantActivity.setStrokes(searchBtn, ReportPlantActivity.LIGHT_ORANGE_COLOR)
+        mAuth = FirebaseAuth.getInstance()
     }
 
     private fun notLoggedIn(): Boolean {
-        return true //switched on for developing Registration and Login
+        //check if current user is null
+        Log.i(TAG, "Current user is " + mAuth!!.currentUser)
+        if(mAuth!!.currentUser == null){
+            return true
+        }
+
+        return false
+
+        //return true //switched on for developing Registration and Login
         //SharedPreferences
         //TODO: move firebase login checking here to save the user a step
+    }
+
+    companion object{
+        const val TAG = "Main Activity"
     }
 }
