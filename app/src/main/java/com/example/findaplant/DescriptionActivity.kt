@@ -57,7 +57,6 @@ class DescriptionActivity : AppCompatActivity(){
         }
 
         // Intent can either come from SearchActivity or MapActivity
-        Log.i(TAG, "Title is " + plantIntent.getStringExtra(MapsActivity.TITLE_KEY))
 
         if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null &&
             plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()) {
@@ -68,6 +67,8 @@ class DescriptionActivity : AppCompatActivity(){
 
             // TODO: fix these null checks + make this work for user entered data
             val descriptionText = plantIntent.getStringExtra(MapsActivity.DESCRIPTION_KEY)
+            Log.i(TAG, "Description title coming from map activity is " + plantIntent.getStringExtra(MapsActivity.TITLE_KEY))
+            Log.i(TAG, "Description text coming from map activity is " + descriptionText)
             if (descriptionText != null) {
                 plantDescription?.text = descriptionText
                 plantDescription?.visibility = View.VISIBLE
@@ -93,12 +94,10 @@ class DescriptionActivity : AppCompatActivity(){
             plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
                 // TODO: fix these null checks + make this work for user entered data
             val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
-            Log.i(TAG, "Title is " + plantName?.text + " description " + descriptionText)
             if (descriptionText != null) {
                 plantDescription?.text = descriptionText
                 plantDescription?.visibility = View.VISIBLE
             }
-            Log.i(TAG, "Loads plant url into plant image")
             val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
             if (imageURL.contains("https")) { // URL
                 Glide.with(this)
@@ -127,57 +126,18 @@ class DescriptionActivity : AppCompatActivity(){
             //then call map activity
             mapIntent = Intent(this, MapsActivity::class.java)
             mapIntent.putExtra(PLANT_NAME_KEY, plantIntent.getStringExtra(SearchActivity.TITLE_KEY))
-            Log.i("Plant name is ", plantName!!.text.toString())
-            Log.i("Plant name is from Description Activity", plantIntent.getStringExtra(SearchActivity.TITLE_KEY))
-            Log.i("Description name is from Description Activity", plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY))
             mapIntent.putExtra(PLANT_DESC_KEY, plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY))
             val latitude = plantIntent.getDoubleExtra(SearchActivity.LATITUDE, DEFAULT_LAT)
             val longitude = plantIntent.getDoubleExtra(SearchActivity.LONGITUDE, DEFAULT_LONG)
             val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
-            Log.i(TAG, "Latitude " + latitude)
-            Log.i(TAG, "Longitude " + longitude)
             mapIntent.putExtra(LATITUDE_KEY, latitude)
             mapIntent.putExtra(LONGITUDE_KEY, longitude)
             mapIntent.putExtra(IMAGE_KEY, imageURL)
             mapIntent.putExtra(NOT_A_REPORT, true)
             startActivity(mapIntent)
 
-            /***Convert image URL into bitmap ***/
-
-
         }
     }
-
-    /*** Android does not allow accessing internet from main thread so use background thread***/
-//    private fun convertImageToBitmap(imageURL : String) : Boolean{
-//        //Check if URL is null
-//        if(imageURL == null){
-//            return false
-//        }
-//        //check if image URL is an empty string
-//        if(imageURL.length == 0){
-//            return false
-//        }
-//
-//        Executors.newSingleThreadExecutor().execute{
-//            Log.i(TAG, "Entering thread to convert to bitmap")
-//
-//            val imageToURL = URL(imageURL)
-//            //open http connection
-//            val connection = imageToURL.openConnection()
-//            //connect the connection
-//            connection.connect()
-//            //get Input Stream
-//            val input = connection.getInputStream()
-//            //turn to BitMap
-//            val bitMap = BitmapFactory.decodeStream(input)
-//            Log.i(TAG, "Bitmap is " + bitMap)
-//            mapIntent.putExtra(IMAGE_KEY, bitMap)
-//
-//
-//        }
-//        return true
-//    }
 
 
     companion object{

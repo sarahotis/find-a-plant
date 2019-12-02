@@ -30,6 +30,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var imageURL: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //TODO: Have a label on the plant made when entering the map to know which plant we're looking for
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -101,35 +102,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(postSnapshot in dataSnapshot.children) {
 
-                    val name = postSnapshot.child("common_name").value as String
+                    //Added as? to avoid error "null cannot be cast to non-null type"
+                    val name = postSnapshot.child("common_name").value as? String
                     Log.i(TAG, "Name of user input plant is " + name)
-                    val datLat = postSnapshot.child("latitude").value as Double
+                    val datLat = postSnapshot.child("latitude").value as? Double
                     Log.i(TAG, "Latitude of plant is " + datLat)
-                    val datLong = postSnapshot.child("longitude").value as Double
-                    val datDesc = postSnapshot.child("description").value as String
-                    val datImage = postSnapshot.child("image").value as String
+                    val datLong = postSnapshot.child("longitude").value as? Double
+                    val datDesc = postSnapshot.child("description").value as? String
+                    Log.i(TAG, "Description of user inputs " + datDesc)
+                    val datImage = postSnapshot.child("image").value as? String
 
                     // Add plant marker to map
-                    val datLocation = LatLng(datLat, datLong)
+                    val datLocation = LatLng(datLat!!, datLong!!)
                     lateinit var datMarker : Marker
-                    if (datDesc.isEmpty()) {
+                    if (datDesc!!.isEmpty()) {
                         datMarker = mMap.addMarker(
                             MarkerOptions()
                                 .position(datLocation)
-                                .title(name.capitalizeWords())
+                                .title(name!!.capitalizeWords())
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
                         ) // can also use R.drawable.plant
                     } else {
                         datMarker = mMap.addMarker(
                             MarkerOptions()
                                 .position(datLocation)
-                                .title(name.capitalizeWords())
+                                .title(name!!.capitalizeWords())
                                 .snippet(datDesc)
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
                         ) // can also use R.drawable.pl
                     }
+                    //If its a plant report put marker on last entry
+                    datMarker.tag = datImage // Tag used to store image of plant on marker
                     if(!notAPlantReport){
-                        datMarker.tag = datImage // Tag used to store image of plant on marker
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(datLocation, INITIAL_ZOOM_LEVEL))
                         Log.i(TAG, "Marker placed in user inputs")
                     }
@@ -170,18 +174,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        /***Check if plant is searched in the database or reported
-        Determines where to move marker ***/
+        /***Check if plant is searched in the database or reported. If searched move
+         marker to searched plant location ***/
         if(notAPlantReport){
             Log.i(TAG, "Not a plant report. Put marker on searched plant")
             //Plant information came from DescriptionActivity
 
+            if(plantDesc.isNotEmpty()){
+                val datMarker = mMap.addMarker(MarkerOptions()
+                    .position(latLng)
+                    .title(plantName.capitalizeWords())
+                    .snippet(plantDesc)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                datMarker.tag = imageURL // Tag used to store image of plant on marker
+            }else{
+                val datMarker = mMap.addMarker(MarkerOptions()
+                    .position(latLng)
+                    .title(plantName.capitalizeWords())
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                datMarker.tag = imageURL // Tag used to store image of plant on marker
+            }
 
-            val datMarker = mMap.addMarker(MarkerOptions()
-                .position(latLng)
-                .title(plantName.capitalizeWords())
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
-            datMarker.tag = imageURL // Tag used to store image of plant on marker
 
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
@@ -197,7 +210,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             descriptionIntent.putExtra(TITLE_KEY, it.title)
             Log.i(TAG, plantName)
             descriptionIntent.putExtra(DESCRIPTION_KEY, it.snippet)
-            Log.i(TAG, plantDesc)
+            Log.i(TAG, "Description put into Intent is " + it.snippet)
             if (it.tag != null) {
                 descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
             }
@@ -209,9 +222,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     fun String.capitalizeWords(): String = split(" ").map { it.capitalize() }.joinToString(" ")
 
     companion object {
-        const val TITLE_KEY = "TITLE_KEY"
-        const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
-        const val IMAGE_KEY = "IMAGE_KEY"
+        const val TITLE_KEY = "TITLE_KEY_FROM_MAP"
+        const val DESCRIPTION_KEY = "DESCRIPTION_KEY_FROM_MAP"
+        const val IMAGE_KEY = "IMAGE_KEY_FROM_MAP"
         const val INITIAL_ZOOM_LEVEL = 16f
         const val MINIMUM_ZOOM_LEVEL = 10f
         // Note: Default lat/long is UMD
