@@ -102,6 +102,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(postSnapshot in dataSnapshot.children) {
 
+<<<<<<< HEAD
                     //Added as? to avoid error "null cannot be cast to non-null type"
                     val name = postSnapshot.child("common_name").value as? String
                     Log.i(TAG, "Name of user input plant is " + name)
@@ -111,6 +112,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     val datDesc = postSnapshot.child("description").value as? String
                     Log.i(TAG, "Description of user inputs " + datDesc)
                     val datImage = postSnapshot.child("image").value as? String
+=======
+                    val name = postSnapshot.child("common_name").value as String
+                    Log.i(TAG, "Name of user input plant is " + name)
+                    val datLat = postSnapshot.child("latitude").value as Double
+                    Log.i(TAG, "Latitude of plant is " + datLat)
+                    val datLong = postSnapshot.child("longitude").value as Double
+                    val datDesc = postSnapshot.child("description").value as String
+                    val datImage = postSnapshot.child("image").value as String
+>>>>>>> cbd6296ffca577fc08e462e5525df0c955a1f85b
 
                     // Add plant marker to map
                     val datLocation = LatLng(datLat!!, datLong!!)
@@ -131,9 +141,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
                         ) // can also use R.drawable.pl
                     }
+<<<<<<< HEAD
                     //If its a plant report put marker on last entry
                     datMarker.tag = datImage // Tag used to store image of plant on marker
                     if(!notAPlantReport){
+=======
+                    if(!notAPlantReport){
+                        datMarker.tag = datImage // Tag used to store image of plant on marker
+>>>>>>> cbd6296ffca577fc08e462e5525df0c955a1f85b
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(datLocation, INITIAL_ZOOM_LEVEL))
                         Log.i(TAG, "Marker placed in user inputs")
                     }
@@ -174,12 +189,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
+<<<<<<< HEAD
         /***Check if plant is searched in the database or reported. If searched move
          marker to searched plant location ***/
+=======
+        /***Check if plant is searched in the database or reported
+        Determines where to move marker ***/
+>>>>>>> cbd6296ffca577fc08e462e5525df0c955a1f85b
         if(notAPlantReport){
             Log.i(TAG, "Not a plant report. Put marker on searched plant")
             //Plant information came from DescriptionActivity
 
+<<<<<<< HEAD
             if(plantDesc.isNotEmpty()){
                 val datMarker = mMap.addMarker(MarkerOptions()
                     .position(latLng)
@@ -195,6 +216,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             }
 
+=======
+
+            val datMarker = mMap.addMarker(MarkerOptions()
+                .position(latLng)
+                .title(plantName.capitalizeWords())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+            datMarker.tag = imageURL // Tag used to store image of plant on marker
+>>>>>>> cbd6296ffca577fc08e462e5525df0c955a1f85b
 
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
@@ -210,7 +239,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             descriptionIntent.putExtra(TITLE_KEY, it.title)
             Log.i(TAG, plantName)
             descriptionIntent.putExtra(DESCRIPTION_KEY, it.snippet)
+<<<<<<< HEAD
             Log.i(TAG, "Description put into Intent is " + it.snippet)
+=======
+            Log.i(TAG, plantDesc)
+>>>>>>> cbd6296ffca577fc08e462e5525df0c955a1f85b
             if (it.tag != null) {
                 descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
             }
