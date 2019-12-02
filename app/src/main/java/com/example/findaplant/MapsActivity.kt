@@ -24,6 +24,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var databasePlants: DatabaseReference // For FireBase stuff
     private var backToMainButton : Button? = null
+    private lateinit var plantName: String
+    private lateinit var plantDesc : String
+    private lateinit var latLng: LatLng
+    private var imageURL: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,31 +55,46 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
+    /*** Check if intent came from ReportPlantActivity or is a plant that is searched in the database***/
     override fun onMapReady(googleMap: GoogleMap) {
+        Log.i(TAG, "Entered onMapReady")
         mMap = googleMap
         val mapIntent = intent
         val database = FirebaseDatabase.getInstance()
-
-
         val databaseUserPlants = database.getReference("User Plants")
 
-        // Get name, description, location, and image that user reported
-        val plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
-        val plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
-        val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, DEFAULT_LAT)
-        val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, DEFAULT_LONG)
-        // Base64 encoding for uploading Bitmap image to firebase
-        val image = mapIntent.getParcelableExtra<Bitmap>(ReportPlantActivity.IMAGE_KEY)
-        val baos = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
-        val timeStamp = System.currentTimeMillis()
-        // Add plant report to database
-        databaseUserPlants.child(timeStamp.toString()).child("common_name").setValue(plantName)
-        databaseUserPlants.child(timeStamp.toString()).child("latitude").setValue(latitude)
-        databaseUserPlants.child(timeStamp.toString()).child("longitude").setValue(longitude)
-        databaseUserPlants.child(timeStamp.toString()).child("image").setValue(imageEncoded)
-        databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
+        val notAPlantReport = mapIntent.getBooleanExtra(DescriptionActivity.NOT_A_REPORT, false)
+        //If it's not a plant report then no need to put plant info into User Plants database
+        if(!notAPlantReport){
+
+            // Get name, description, location, and image that user reported
+            plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
+            plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
+            val latitude = mapIntent.getDoubleExtra(ReportPlantActivity.LATITUDE_KEY, DEFAULT_LAT)
+            val longitude = mapIntent.getDoubleExtra(ReportPlantActivity.LONGITUDE_KEY, DEFAULT_LONG)
+            latLng = LatLng(latitude, longitude)
+            // Base64 encoding for uploading Bitmap image to firebase
+            val image = mapIntent.getParcelableExtra<Bitmap>(ReportPlantActivity.IMAGE_KEY)
+            val baos = ByteArrayOutputStream()
+            image!!.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+            val timeStamp = System.currentTimeMillis()
+            // Add plant report to database
+            databaseUserPlants.child(timeStamp.toString()).child("common_name").setValue(plantName)
+            databaseUserPlants.child(timeStamp.toString()).child("latitude").setValue(latitude)
+            databaseUserPlants.child(timeStamp.toString()).child("longitude").setValue(longitude)
+            databaseUserPlants.child(timeStamp.toString()).child("image").setValue(imageEncoded)
+            databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
+        }else{
+            plantName = mapIntent.getStringExtra(DescriptionActivity.PLANT_NAME_KEY).capitalizeWords()
+            plantDesc = mapIntent.getStringExtra(DescriptionActivity.PLANT_DESC_KEY)
+            val latitude = mapIntent.getDoubleExtra(DescriptionActivity.LATITUDE_KEY, DEFAULT_LAT)
+            val longitude = mapIntent.getDoubleExtra(DescriptionActivity.LONGITUDE_KEY, DEFAULT_LONG)
+            latLng = LatLng(latitude, longitude)
+            imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
+        }
+
 
         /* Add all the plants in the User's database previously to the map */
         databaseUserPlants.addValueEventListener(object : ValueEventListener {
@@ -83,7 +102,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 for(postSnapshot in dataSnapshot.children) {
 
                     val name = postSnapshot.child("common_name").value as String
+                    Log.i(TAG, "Name of user input plant is " + name)
                     val datLat = postSnapshot.child("latitude").value as Double
+                    Log.i(TAG, "Latitude of plant is " + datLat)
                     val datLong = postSnapshot.child("longitude").value as Double
                     val datDesc = postSnapshot.child("description").value as String
                     val datImage = postSnapshot.child("image").value as String
@@ -107,8 +128,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
                         ) // can also use R.drawable.pl
                     }
-                    datMarker.tag = datImage // Tag used to store image of plant on marker
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(datLocation, INITIAL_ZOOM_LEVEL))
+                    if(!notAPlantReport){
+                        datMarker.tag = datImage // Tag used to store image of plant on marker
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(datLocation, INITIAL_ZOOM_LEVEL))
+                        Log.i(TAG, "Marker placed in user inputs")
+                    }
+
                 }
             }
 
@@ -122,15 +147,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         databasePlants.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(postSnapshot in dataSnapshot.children) {
-                    val name = postSnapshot.child("common_name").value as String
-                    if (name.isNotEmpty()) { // Make sure plant has a name
+                    val name = postSnapshot.child("common_name").value as? String
+                    if (name!!.isNotEmpty()) { // Make sure plant has a name
                         // Get latitude and longitude from database
-                        val datLat = postSnapshot.child("latitude").value as Double
-                        val datLong = postSnapshot.child("longitude").value as Double
-                        val imageURL = postSnapshot.child("image_url").value as String
+                        val datLat = postSnapshot.child("latitude").value as? Double
+                        val datLong = postSnapshot.child("longitude").value as? Double
+                        val imageURL = postSnapshot.child("image_url").value as? String
 
                         // Add plant marker to map
-                        val datLocation = LatLng(datLat, datLong)
+                        val datLocation = LatLng(datLat!!, datLong!!)
                         val datMarker = mMap.addMarker(MarkerOptions()
                             .position(datLocation)
                             .title(name.capitalizeWords())
@@ -145,16 +170,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
+        /***Check if plant is searched in the database or reported
+        Determines where to move marker ***/
+        if(notAPlantReport){
+            Log.i(TAG, "Not a plant report. Put marker on searched plant")
+            //Plant information came from DescriptionActivity
+
+
+            val datMarker = mMap.addMarker(MarkerOptions()
+                .position(latLng)
+                .title(plantName.capitalizeWords())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+            datMarker.tag = imageURL // Tag used to store image of plant on marker
+
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
+            Log.i(TAG, "Marker placed in searched plant")
+        }
+
+
         // Max zoom out level (20 = buildings, 1 = world)
         mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
 
         mMap.setOnInfoWindowClickListener {
             val descriptionIntent = Intent(this, DescriptionActivity::class.java)
             descriptionIntent.putExtra(TITLE_KEY, it.title)
+            Log.i(TAG, plantName)
             descriptionIntent.putExtra(DESCRIPTION_KEY, it.snippet)
+            Log.i(TAG, plantDesc)
             if (it.tag != null) {
                 descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
             }
+
             startActivity(descriptionIntent)
         }
     }
@@ -170,5 +217,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Note: Default lat/long is UMD
         const val DEFAULT_LAT = 38.9858
         const val DEFAULT_LONG = -76.9373
+        const val TAG = "Map Activity"
     }
 }

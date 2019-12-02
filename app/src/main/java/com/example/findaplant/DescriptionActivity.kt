@@ -1,6 +1,7 @@
 package com.example.findaplant
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
@@ -11,6 +12,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import android.util.Log
+import java.lang.Exception
+import java.net.URL
+import java.util.concurrent.Executors
 
 
 class DescriptionActivity : AppCompatActivity(){
@@ -22,6 +26,7 @@ class DescriptionActivity : AppCompatActivity(){
     private var backToMainButton : Button? = null
     private var cameFromSearchActivity: Boolean = false
     private lateinit var plantIntent: Intent
+    private lateinit var mapIntent: Intent
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +57,8 @@ class DescriptionActivity : AppCompatActivity(){
         }
 
         // Intent can either come from SearchActivity or MapActivity
+        Log.i(TAG, "Title is " + plantIntent.getStringExtra(MapsActivity.TITLE_KEY))
+
         if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null &&
             plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()) {
 
@@ -86,15 +93,23 @@ class DescriptionActivity : AppCompatActivity(){
             plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
                 // TODO: fix these null checks + make this work for user entered data
             val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
+            Log.i(TAG, "Title is " + plantName?.text + " description " + descriptionText)
             if (descriptionText != null) {
                 plantDescription?.text = descriptionText
                 plantDescription?.visibility = View.VISIBLE
             }
             Log.i(TAG, "Loads plant url into plant image")
             val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
-            Glide.with(this)
-                .load(imageURL)
-                .into(plantImage!!)
+            if (imageURL.contains("https")) { // URL
+                Glide.with(this)
+                    .load(imageURL)
+                    .into(plantImage!!)
+            } else { // Base64 encoded
+                val byteArray = Base64.decode(imageURL, Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                plantImage?.setImageBitmap(bitmap)
+                plantImage?.rotation = 90f
+            }
         }
 
     }
@@ -110,23 +125,59 @@ class DescriptionActivity : AppCompatActivity(){
             //get latitude and longitude from Firebase to put into map intent
             //get name, description and image taken to put into map intent
             //then call map activity
-            val mapIntent = Intent(this, MapsActivity::class.java)
-            mapIntent.putExtra(PLANT_NAME_KEY, plantName.toString())
-            mapIntent.putExtra(PLANT_DESC_KEY, plantDescription.toString())
+            mapIntent = Intent(this, MapsActivity::class.java)
+            mapIntent.putExtra(PLANT_NAME_KEY, plantIntent.getStringExtra(SearchActivity.TITLE_KEY))
+            Log.i("Plant name is ", plantName!!.text.toString())
+            Log.i("Plant name is from Description Activity", plantIntent.getStringExtra(SearchActivity.TITLE_KEY))
+            Log.i("Description name is from Description Activity", plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY))
+            mapIntent.putExtra(PLANT_DESC_KEY, plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY))
             val latitude = plantIntent.getDoubleExtra(SearchActivity.LATITUDE, DEFAULT_LAT)
             val longitude = plantIntent.getDoubleExtra(SearchActivity.LONGITUDE, DEFAULT_LONG)
+            val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
             Log.i(TAG, "Latitude " + latitude)
             Log.i(TAG, "Longitude " + longitude)
             mapIntent.putExtra(LATITUDE_KEY, latitude)
             mapIntent.putExtra(LONGITUDE_KEY, longitude)
-            val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
-            Log.i(TAG, "Image URL is " + imageURL)
             mapIntent.putExtra(IMAGE_KEY, imageURL)
+            mapIntent.putExtra(NOT_A_REPORT, true)
             startActivity(mapIntent)
 
-        }
+            /***Convert image URL into bitmap ***/
 
+
+        }
     }
+
+    /*** Android does not allow accessing internet from main thread so use background thread***/
+//    private fun convertImageToBitmap(imageURL : String) : Boolean{
+//        //Check if URL is null
+//        if(imageURL == null){
+//            return false
+//        }
+//        //check if image URL is an empty string
+//        if(imageURL.length == 0){
+//            return false
+//        }
+//
+//        Executors.newSingleThreadExecutor().execute{
+//            Log.i(TAG, "Entering thread to convert to bitmap")
+//
+//            val imageToURL = URL(imageURL)
+//            //open http connection
+//            val connection = imageToURL.openConnection()
+//            //connect the connection
+//            connection.connect()
+//            //get Input Stream
+//            val input = connection.getInputStream()
+//            //turn to BitMap
+//            val bitMap = BitmapFactory.decodeStream(input)
+//            Log.i(TAG, "Bitmap is " + bitMap)
+//            mapIntent.putExtra(IMAGE_KEY, bitMap)
+//
+//
+//        }
+//        return true
+//    }
 
 
     companion object{
@@ -138,6 +189,7 @@ class DescriptionActivity : AppCompatActivity(){
         const val IMAGE_KEY = "IMAGE_KEY"
         const val DEFAULT_LAT = 38.9858
         const val DEFAULT_LONG = -76.9373
+        const val NOT_A_REPORT = "Not a report"
 
     }
 }
