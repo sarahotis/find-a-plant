@@ -45,8 +45,6 @@ class SearchActivity : AppCompatActivity() {
             startActivity(mainActivityIntent)
         }
 
-
-
         //Set on click listener for Search Button
         searchPlantButton.setOnClickListener {
             ReportPlantActivity.animate(it)
@@ -61,7 +59,6 @@ class SearchActivity : AppCompatActivity() {
                 //call searchPlant method
                 searchPlantInputs()
                 searchUserInputs()
-
             }
         }
 
@@ -133,8 +130,8 @@ class SearchActivity : AppCompatActivity() {
 
         val descriptionActivityIntent = Intent(this@SearchActivity, DescriptionActivity::class.java)
         //Placing plant name and description into intent
-        descriptionActivityIntent.putExtra(TITLE_KEY, description)
-        descriptionActivityIntent.putExtra(DESCRIPTION_KEY, name)
+        descriptionActivityIntent.putExtra(TITLE_KEY, name)
+        descriptionActivityIntent.putExtra(DESCRIPTION_KEY, description)
         descriptionActivityIntent.putExtra(LATITUDE, latitude)
         descriptionActivityIntent.putExtra(LONGITUDE, longitude)
         descriptionActivityIntent.putExtra(IMAGE_KEY, imageURL)
@@ -151,10 +148,10 @@ class SearchActivity : AppCompatActivity() {
 
     companion object{
         const val TAG = "Search Activity"
-        const val TITLE_KEY = "TITLE_KEY"
-        const val DESCRIPTION_KEY = "DESCRIPTION_KEY"
-        const val LATITUDE = "LATITUDE"
-        const val LONGITUDE = "LONGITUDE"
-        const val IMAGE_KEY = "IMAGE_KEY"
+        const val TITLE_KEY = "TITLE_KEY_FROM_SEARCH"
+        const val DESCRIPTION_KEY = "DESCRIPTION_KEY_FROM_SEARCH"
+        const val LATITUDE = "LATITUDE_FROM_SEARCH"
+        const val LONGITUDE = "LONGITUDE_FROM_SEARCH"
+        const val IMAGE_KEY = "IMAGE_KEY_FROM_SEARCH"
     }
 }
