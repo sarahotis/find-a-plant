@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions
+import android.util.Log
 
 class ReportPlantActivity : AppCompatActivity() {
 
@@ -43,6 +44,7 @@ class ReportPlantActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestPermissions()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        Log.i(TAG, "Entering ReportPlantActivity")
     }
 
     private fun requestPermissions() {
@@ -155,6 +157,7 @@ class ReportPlantActivity : AppCompatActivity() {
                         // Store longitude and latitude for plant marker on map
                         mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
                         mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
+                        Log.i(TAG, "Map activity started")
                         startActivity(mapsIntent)
                     }
                 }
