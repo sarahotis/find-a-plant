@@ -1,12 +1,15 @@
 package com.example.findaplant
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.widget.Button
+import androidx.core.content.ContextCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -66,6 +69,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.LENGTH_LONG).show();
         Log.i(TAG, "Entered onMapReady")
         mMap = googleMap
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.isMyLocationEnabled = true // Blue dot representing user
+        }
+
         val mapIntent = intent
         val database = FirebaseDatabase.getInstance()
         val databaseUserPlants = database.getReference("User Plants")
@@ -73,7 +80,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val notAPlantReport = mapIntent.getBooleanExtra(DescriptionActivity.NOT_A_REPORT, false)
         //If it's not a plant report then no need to put plant info into User Plants database
         if(!notAPlantReport){
-
             // Get name, description, location, and image that user reported
             plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
             plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
@@ -92,7 +98,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             databaseUserPlants.child(timeStamp.toString()).child("longitude").setValue(longitude)
             databaseUserPlants.child(timeStamp.toString()).child("image").setValue(imageEncoded)
             databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
-        }else{
+        } else {
             plantName = mapIntent.getStringExtra(DescriptionActivity.PLANT_NAME_KEY).capitalizeWords()
             plantDesc = mapIntent.getStringExtra(DescriptionActivity.PLANT_DESC_KEY)
             val latitude = mapIntent.getDoubleExtra(DescriptionActivity.LATITUDE_KEY, DEFAULT_LAT)
@@ -100,56 +106,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             latLng = LatLng(latitude, longitude)
             imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
         }
-
-
-        /* Add all the plants in the User's database previously to the map */
-        databaseUserPlants.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for(postSnapshot in dataSnapshot.children) {
-
-                    //Added as? to avoid error "null cannot be cast to non-null type"
-                    val name = postSnapshot.child("common_name").value as? String
-                    Log.i(TAG, "Name of user input plant is " + name)
-                    val datLat = postSnapshot.child("latitude").value as? Double
-                    Log.i(TAG, "Latitude of plant is " + datLat)
-                    val datLong = postSnapshot.child("longitude").value as? Double
-                    val datDesc = postSnapshot.child("description").value as? String
-                    Log.i(TAG, "Description of user inputs " + datDesc)
-                    val datImage = postSnapshot.child("image").value as? String
-
-                    // Add plant marker to map
-                    val datLocation = LatLng(datLat!!, datLong!!)
-                    lateinit var datMarker : Marker
-                    if (datDesc!!.isEmpty()) {
-                        datMarker = mMap.addMarker(
-                            MarkerOptions()
-                                .position(datLocation)
-                                .title(name!!.capitalizeWords())
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
-                        ) // can also use R.drawable.plant
-                    } else {
-                        datMarker = mMap.addMarker(
-                            MarkerOptions()
-                                .position(datLocation)
-                                .title(name!!.capitalizeWords())
-                                .snippet(datDesc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
-                        ) // can also use R.drawable.pl
-                    }
-                    //If its a plant report put marker on last entry
-                    datMarker.tag = datImage // Tag used to store image of plant on marker
-                    if(!notAPlantReport){
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(datLocation, INITIAL_ZOOM_LEVEL))
-                        Log.i(TAG, "Marker placed in user inputs")
-                    }
-
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.w("Report Firebase", "Failed to read data", error.toException())
-            }
-        })
 
         /* Add all the plants in the Plants Added To FB database previously to the map */
         databasePlants = database.getReference("Plants Added To FB")
@@ -179,47 +135,89 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        /***Check if plant is searched in the database or reported. If searched move
-        marker to searched plant location ***/
-        if(notAPlantReport){
-            Log.i(TAG, "Not a plant report. Put marker on searched plant")
-            //Plant information came from DescriptionActivity
+        /* Add all the plants in the User's database previously to the map */
+        databaseUserPlants.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for(postSnapshot in dataSnapshot.children) {
 
-            if(plantDesc.isNotEmpty()){
+                    //Added as? to avoid error "null cannot be cast to non-null type"
+                    val name = postSnapshot.child("common_name").value as? String ?: continue
+                    var datLat = postSnapshot.child("latitude").value as? Double
+                    var datLong = postSnapshot.child("longitude").value as? Double
+                    var datDesc = postSnapshot.child("description").value as? String
+                    var datImage = postSnapshot.child("image").value as? String
+
+                    // Add plant marker to map
+                    if (datLat != null && datLong != null && datDesc != null && datImage != null) {
+                        val datLocation = LatLng(datLat!!, datLong!!)
+                        lateinit var datMarker: Marker
+                        if (datDesc!!.isEmpty()) {
+                            datMarker = mMap.addMarker(
+                                MarkerOptions()
+                                    .position(datLocation)
+                                    .title(name.capitalizeWords())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                            ) // can also use R.drawable.plant
+                        } else {
+                            datMarker = mMap.addMarker(
+                                MarkerOptions()
+                                    .position(datLocation)
+                                    .title(name.capitalizeWords())
+                                    .snippet(datDesc)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                            ) // can also use R.drawable.plant
+                        }
+                        //If its a plant report put marker on last entry
+                        datMarker.tag = datImage // Tag used to store image of plant on marker
+                        if (!notAPlantReport) {
+                            mMap.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    datLocation,
+                                    INITIAL_ZOOM_LEVEL
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Report Firebase", "Failed to read data", error.toException())
+            }
+        })
+
+        /** Check if plant is searched in the database or reported. If searched move
+        marker to searched plant location **/
+        if(notAPlantReport){
+            //Plant information came from DescriptionActivity
+            if(plantDesc.isNotEmpty()) {
                 val datMarker = mMap.addMarker(MarkerOptions()
                     .position(latLng)
                     .title(plantName.capitalizeWords())
                     .snippet(plantDesc)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
-            }else{
+            } else {
                 val datMarker = mMap.addMarker(MarkerOptions()
                     .position(latLng)
                     .title(plantName.capitalizeWords())
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             }
-
-
-
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
-            Log.i(TAG, "Marker placed in searched plant")
         }
-
 
         // Max zoom out level (20 = buildings, 1 = world)
         mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
 
+        /** Bring up DescriptionActivity when marker content clicked */
         mMap.setOnInfoWindowClickListener {
             val descriptionIntent = Intent(this, DescriptionActivity::class.java)
             descriptionIntent.putExtra(TITLE_KEY, it.title)
-            Log.i(TAG, plantName)
             descriptionIntent.putExtra(DESCRIPTION_KEY, it.snippet)
-            Log.i(TAG, "Description put into Intent is " + it.snippet)
             if (it.tag != null) {
                 descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
             }
-
             startActivity(descriptionIntent)
         }
     }

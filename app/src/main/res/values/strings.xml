@@ -4,7 +4,7 @@
     <string name="title_activity_maps">BasicPlantMap</string>
     <string name="message_activity_maps">Thanks for contributing!</string>
     <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
-    <string name="no_permissions">This app needs access to your device camera, location, and storage to continue!</string>
+    <string name="no_permissions">This app needs access to your device camera and storage to continue! You may enter location manually or share your current location.</string>
     <string name="enable_permissions">Click here to enable permissions</string>
     <string name="what_plant">What plant is this?</string>
     <string name="user_input_plant">Enter plant name…</string>
@@ -29,4 +29,12 @@
     <string name="register_instead">New here? Register Now!</string>
     <string name="login_instead">Already registered? Log in</string>
     <string name="find_plant_on_map">Find Plant On Map</string>
+    <string name="enter_latitude">Plant latitude:</string>
+    <string name="enter_longitude">Plant longitude:</string>
+    <string name="example_latitude">Ex: 38.9859</string>
+    <string name="example_longitude">Ex: -76.9386</string>
+    <string name="invalid_lat_and_long">Error: Invalid latitude and longitude values!</string>
+    <string name="invalid_lat">Error: Invalid latitude value!</string>
+    <string name="invalid_long">Error: Invalid longitude value!</string>
+
 </resources>
