@@ -10,17 +10,20 @@ import android.widget.Button
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import android.view.MenuItem
+import android.view.Menu
+import androidx.appcompat.widget.Toolbar
 
 
 class MainActivity : AppCompatActivity() {
 
     private var mAuth: FirebaseAuth? = null
     internal var reportBtn: Button? = null
-//    internal var descriptionBtn: Button? = null
     internal var searchBtn: Button? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        setSupportActionBar(findViewById(R.id.my_toolbar))
 
         initializeViews()
         Log.i(TAG, "In Main Activity")
@@ -67,6 +70,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         return false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(com.example.findaplant.R.menu.menu_main, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
