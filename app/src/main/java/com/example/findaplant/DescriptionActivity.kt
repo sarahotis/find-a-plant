@@ -130,10 +130,14 @@ class DescriptionActivity : AppCompatActivity(){
             val latitude = plantIntent.getDoubleExtra(SearchActivity.LATITUDE, DEFAULT_LAT)
             val longitude = plantIntent.getDoubleExtra(SearchActivity.LONGITUDE, DEFAULT_LONG)
             val imageURL = plantIntent.getStringExtra(SearchActivity.IMAGE_KEY)
+            val latitudeGeocode = plantIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
+            val longitudeGeocode = plantIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
             mapIntent.putExtra(LATITUDE_KEY, latitude)
             mapIntent.putExtra(LONGITUDE_KEY, longitude)
             mapIntent.putExtra(IMAGE_KEY, imageURL)
             mapIntent.putExtra(NOT_A_REPORT, true)
+            mapIntent.putExtra(SearchActivity.LATITUDE_FROM_GEOCODER, latitudeGeocode)
+            mapIntent.putExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, longitudeGeocode)
             startActivity(mapIntent)
 
         }

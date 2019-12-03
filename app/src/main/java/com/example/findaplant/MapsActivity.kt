@@ -98,8 +98,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             /**TEST**/
             //Get Geocode values
             //TODO: Default values are iffy. Change later
-            val latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, 0.0)
-            val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, 0.0)
+            val latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
+            val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
             Log.i(TAG, "Latitude from geocode is " + latitudeGeocode)
             Log.i(TAG, "Longitude from geocode is " + longitudeGeocode)
 
