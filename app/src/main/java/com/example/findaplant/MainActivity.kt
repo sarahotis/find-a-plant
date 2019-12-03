@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(findViewById(R.id.my_toolbar))
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
 
         initializeViews()
         Log.i(TAG, "In Main Activity")

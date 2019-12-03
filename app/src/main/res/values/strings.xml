@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FindAPlant</string>
     <string name="action_account">View account</string>
+    <string name="photograph_plant">Photograph your plant</string>
     <string name="title_activity_maps">BasicPlantMap</string>
     <string name="message_activity_maps">Thanks for contributing!</string>
     <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
