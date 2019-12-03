@@ -26,7 +26,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions
-import android.util.Log
 
 class ReportPlantActivity : AppCompatActivity() {
 
@@ -36,6 +35,8 @@ class ReportPlantActivity : AppCompatActivity() {
     var reportPlantButton : Button? = null // Click to report plant and go to map
     var reportPlantEditText : EditText? = null // Place to enter plant name
     var reportDescEditText : EditText? = null // Place to enter optional plant description
+    var reportLatitudeText : EditText? = null // Place to enter plant latitude if no location permission
+    var reportLongitudeText : EditText? = null // Place to enter plant longitude if no location permission
     var imageTakenBool = false // Determines if plant picture was taken
     lateinit var imageTaken : Bitmap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -44,7 +45,6 @@ class ReportPlantActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestPermissions()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        Log.i(TAG, "Entering ReportPlantActivity")
     }
 
     private fun requestPermissions() {
@@ -79,21 +79,36 @@ class ReportPlantActivity : AppCompatActivity() {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // permission was granted, yay! Setup the views
-                    setupViews()
-                } else {
-                    // permission denied, boo! Different layout w/ prompt to enable permissions
-                    setContentView(R.layout.report_plant_no_permissions)
-                    permissionsButton = findViewById(R.id.enable_permissions_button)
-                    // Clickable button that opens permissions page so user can enable them
-                    permissionsButton?.setOnClickListener {
-                        val permissionIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.parse("package:" + packageName))
-                        permissionIntent.addCategory(Intent.CATEGORY_DEFAULT)
-                        permissionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(permissionIntent)
+                var permissionsDeniedCounter = 0
+                for (i in 0 until permissions.size) {
+                    if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION
+                             || permissions[i] == Manifest.permission.ACCESS_COARSE_LOCATION) {
+                            // Keep track that at least one permission was denied
+                            permissionsDeniedCounter++
+                            setupNoLocationViews()
+
+                        } else {
+                            // Non-location permission denied, boo!
+                            // Different layout w/ prompt to enable permissions
+                            setContentView(R.layout.report_plant_no_permissions)
+                            permissionsButton = findViewById(R.id.enable_permissions_button)
+                            // Clickable button that opens permissions page so user can enable them
+                            permissionsButton?.setOnClickListener {
+                                val permissionIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                    Uri.parse("package:" + packageName))
+                                permissionIntent.addCategory(Intent.CATEGORY_DEFAULT)
+                                permissionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(permissionIntent)
+                            }
+                            return
+                        }
                     }
+                }
+
+                if (permissionsDeniedCounter == 0) {
+                    // all permissions were granted, yay! Setup the views
+                    setupViews()
                 }
                 return
             }
@@ -127,6 +142,7 @@ class ReportPlantActivity : AppCompatActivity() {
      */
     fun reportPlantOnClick(v: View) {
         animate(v) // Animate button color change
+
         val plantName = reportPlantEditText?.text.toString().trim() // Get plant's name
         if (plantName.isEmpty()) { // If no name entered do not add to database, prompt user for entry
             val errorToast = Toast.makeText(this, R.string.blank_plant_name, Toast.LENGTH_LONG)
@@ -147,20 +163,51 @@ class ReportPlantActivity : AppCompatActivity() {
             val plantDesc = reportDescEditText?.text.toString().trim() // Store extra info about plant
             mapsIntent.putExtra(PLANT_DESC_KEY, plantDesc)
             mapsIntent.putExtra(IMAGE_KEY, imageTaken)
+            mapsIntent.putExtra(DescriptionActivity.NOT_A_REPORT, false)
 
-            // Get last location of phone for logging the plant location
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        // Note: Default for android emulator is somewhere in Mountain View, must manually set
-                        // Store longitude and latitude for plant marker on map
-                        mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
-                        mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
-                        Log.i(TAG, "Map activity started")
-                        startActivity(mapsIntent)
-                    }
+            // If null then the user did not provide location permissions hence manual entry is necessary
+            if (reportLatitudeText != null && reportLongitudeText != null) {
+                val latitude = reportLatitudeText!!.text.toString().trim().toDoubleOrNull()
+                val longitude = reportLongitudeText!!.text.toString().trim().toDoubleOrNull()
+                var badLat = false
+                var badLong = false
+                if (latitude == null || latitude < -90 || latitude > 90) {
+                    badLat = true
                 }
+                if (longitude == null || longitude < -180 || longitude > 180) {
+                    badLong = true
+                }
+                if (badLat && badLong) { // both invalid
+                    val errorToast = Toast.makeText(this, R.string.invalid_lat_and_long, Toast.LENGTH_LONG)
+                    errorToast.setGravity(Gravity.CENTER, 0, 0)
+                    errorToast.show()
+                } else if (badLat && !badLong) { // only latitude invalid
+                    val errorToast = Toast.makeText(this, R.string.invalid_lat, Toast.LENGTH_LONG)
+                    errorToast.setGravity(Gravity.CENTER, 0, 0)
+                    errorToast.show()
+                } else if (!badLat && badLong) { // only longitude invalid
+                    val errorToast = Toast.makeText(this, R.string.invalid_long, Toast.LENGTH_LONG)
+                    errorToast.setGravity(Gravity.CENTER, 0, 0)
+                    errorToast.show()
+                } else { // both valid, store values in intent
+                    mapsIntent.putExtra(LATITUDE_KEY, latitude)
+                    mapsIntent.putExtra(LONGITUDE_KEY, longitude)
+                    startActivity(mapsIntent)
+                }
+            } else { // Have location permissions, get lat/long automatically
+                // Get last location of phone for logging the plant location
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Note: Default for android emulator is somewhere in Mountain View, must manually set
+                            // Store longitude and latitude for plant marker on map
+                            mapsIntent.putExtra(LATITUDE_KEY, location.latitude)
+                            mapsIntent.putExtra(LONGITUDE_KEY, location.longitude)
+                            startActivity(mapsIntent)
+                        }
+                    }
+            }
         }
     }
 
@@ -227,6 +274,21 @@ class ReportPlantActivity : AppCompatActivity() {
         reportPlantButton = findViewById(R.id.reportPlantButton)
         reportPlantEditText = findViewById(R.id.reportPlantEditText)
         reportDescEditText = findViewById(R.id.reportDescEditText)
+
+        // Set stroke (border) and body color of button
+        setStrokes(helpIdentifyButton, LIGHT_ORANGE_COLOR)
+        setStrokes(reportPlantButton, LIGHT_ORANGE_COLOR)
+    }
+
+    private fun setupNoLocationViews() {
+        setContentView(R.layout.report_plant_manual_location)
+        reportImageView = findViewById(R.id.reportImageView)
+        helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
+        reportPlantButton = findViewById(R.id.reportPlantButton)
+        reportPlantEditText = findViewById(R.id.reportPlantEditText)
+        reportDescEditText = findViewById(R.id.reportDescEditText)
+        reportLatitudeText = findViewById(R.id.latitudeEditText)
+        reportLongitudeText = findViewById(R.id.longitudeEditText)
 
         // Set stroke (border) and body color of button
         setStrokes(helpIdentifyButton, LIGHT_ORANGE_COLOR)
