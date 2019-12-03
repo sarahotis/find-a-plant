@@ -82,7 +82,8 @@ class ReportPlantActivity : AppCompatActivity() {
                 var permissionsDeniedCounter = 0
                 for (i in 0 until permissions.size) {
                     if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                        if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION) {
+                        if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION
+                             || permissions[i] == Manifest.permission.ACCESS_COARSE_LOCATION) {
                             // Keep track that at least one permission was denied
                             permissionsDeniedCounter++
                             setupNoLocationViews()

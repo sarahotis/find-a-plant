@@ -3,7 +3,7 @@
     <string name="title_activity_maps">BasicPlantMap</string>
     <string name="message_activity_maps">Thanks for contributing!</string>
     <string name="report_plant_placeholder">The stuff for reporting a sighting will go here!</string>
-    <string name="no_permissions">This app needs access to your device camera, location, and storage to continue!</string>
+    <string name="no_permissions">This app needs access to your device camera and storage to continue! You may enter location manually or share your current location.</string>
     <string name="enable_permissions">Click here to enable permissions</string>
     <string name="what_plant">What plant is this?</string>
     <string name="user_input_plant">Enter plant name…</string>
