@@ -28,4 +28,12 @@
     <string name="register_instead">New here? Register Now!</string>
     <string name="login_instead">Already registered? Log in</string>
     <string name="find_plant_on_map">Find Plant On Map</string>
+    <string name="enter_latitude">Plant latitude:</string>
+    <string name="enter_longitude">Plant longitude:</string>
+    <string name="example_latitude">Ex: 38.9859</string>
+    <string name="example_longitude">Ex: -76.9386</string>
+    <string name="invalid_lat_and_long">Error: Invalid latitude and longitude values!</string>
+    <string name="invalid_lat">Error: Invalid latitude value!</string>
+    <string name="invalid_long">Error: Invalid longitude value!</string>
+
 </resources>

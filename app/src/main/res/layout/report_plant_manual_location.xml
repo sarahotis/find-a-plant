@@ -11,8 +11,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="15dp"
         android:src="@drawable/ic_camera_alt"
         android:onClick="imageViewOnClick">
     </ImageView>
@@ -26,7 +26,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textSize="12pt"
+        android:textSize="10pt"
         android:fontFamily='sans-serif-condensed'
         android:text="@string/what_plant">
     </TextView>
@@ -68,15 +68,82 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/latitudeText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/reportPlantEditText"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="10pt"
+        android:fontFamily='sans-serif-condensed'
+        android:text="@string/enter_latitude">
+    </TextView>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/latitudeEditText"
+        app:layout_constraintLeft_toRightOf="@+id/latitudeText"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/helpIdentifyButton"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:imeOptions="actionNext"
+        android:inputType="numberSigned|numberDecimal"
+        android:maxLines="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="8pt"
+        android:hint="@string/example_latitude">
+    </EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/longitudeText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/latitudeText"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="10pt"
+        android:fontFamily='sans-serif-condensed'
+        android:text="@string/enter_longitude">
+    </TextView>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/longitudeEditText"
+        app:layout_constraintLeft_toRightOf="@+id/longitudeText"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitudeEditText"
+        android:layout_marginTop="15dp"
+        android:imeOptions="actionNext"
+        android:inputType="numberSigned|numberDecimal"
+        android:maxLines="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="8pt"
+        android:hint="@string/example_longitude">
+    </EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/plantDescText"
-        app:layout_constraintTop_toBottomOf="@id/helpIdentifyButton"
+        app:layout_constraintTop_toBottomOf="@id/longitudeText"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:gravity="center"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="5dp"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textSize="12pt"
+        android:textSize="10pt"
         android:fontFamily='sans-serif-condensed'
         android:text="@string/plant_description">
     </TextView>
@@ -84,14 +151,13 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="100dp"
+        android:minHeight="75dp"
         android:id="@+id/reportDescEditText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/plantDescText"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="5dp"
         android:inputType="text|textAutoCorrect"
         android:imeOptions="actionNext"
         android:gravity="center"
@@ -108,7 +174,7 @@
         app:layout_constraintTop_toBottomOf="@+id/reportDescEditText"
         android:id="@+id/reportPlantButton"
         android:background="@drawable/button_rounded_corners"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:padding="10dp"
         android:textColor="#000000"
         android:textSize="8pt"

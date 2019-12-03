@@ -1,7 +1,6 @@
 package com.example.findaplant
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
@@ -11,11 +10,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import android.util.Log
-import java.lang.Exception
-import java.net.URL
-import java.util.concurrent.Executors
-
 
 class DescriptionActivity : AppCompatActivity(){
 
@@ -31,12 +25,8 @@ class DescriptionActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "Entering description activity")
-
         //Get intent
         plantIntent = intent
-
-        //TODO: Show image of plant on description
 
         setContentView(R.layout.description_of_plant_layout)
         plantImage = findViewById(R.id.plantImage)
@@ -50,8 +40,7 @@ class DescriptionActivity : AppCompatActivity(){
         backToMainButton = findViewById(R.id.backToMainButton)
         ReportPlantActivity.setStrokes(backToMainButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
         backToMainButton?.setOnClickListener {
-            //ReportPlantActivity.animate(it)
-            Log.i(TAG, "Main button clicked")
+            ReportPlantActivity.animate(it)
             val mainIntent = Intent(this, MainActivity::class.java)
             startActivity(mainIntent)
         }
@@ -61,14 +50,9 @@ class DescriptionActivity : AppCompatActivity(){
         if (plantIntent.getStringExtra(MapsActivity.TITLE_KEY) != null &&
             plantIntent.getStringExtra(MapsActivity.TITLE_KEY).isNotEmpty()) {
 
-            Log.i(TAG, "Map Activity Intent Started")
-
             plantName?.text = plantIntent.getStringExtra(MapsActivity.TITLE_KEY)
 
-            // TODO: fix these null checks + make this work for user entered data
             val descriptionText = plantIntent.getStringExtra(MapsActivity.DESCRIPTION_KEY)
-            Log.i(TAG, "Description title coming from map activity is " + plantIntent.getStringExtra(MapsActivity.TITLE_KEY))
-            Log.i(TAG, "Description text coming from map activity is " + descriptionText)
             if (descriptionText != null) {
                 plantDescription?.text = descriptionText
                 plantDescription?.visibility = View.VISIBLE
@@ -86,13 +70,10 @@ class DescriptionActivity : AppCompatActivity(){
                 plantImage?.setImageBitmap(bitmap)
                 plantImage?.rotation = 90f
             }
-
         } else {
             cameFromSearchActivity = true
-            Log.i(TAG, "Intent came from searchActivity")
 
             plantName?.text = plantIntent.getStringExtra(SearchActivity.TITLE_KEY)
-            // TODO: fix these null checks + make this work for user entered data
             val descriptionText = plantIntent.getStringExtra(SearchActivity.DESCRIPTION_KEY)
             if (descriptionText != null) {
                 plantDescription?.text = descriptionText
@@ -110,15 +91,13 @@ class DescriptionActivity : AppCompatActivity(){
                 plantImage?.rotation = 90f
             }
         }
-
     }
 
     private fun goToMap(it:View){
-        if(!cameFromSearchActivity){
-            Log.i(TAG, "Go to map button clicked")
-            ReportPlantActivity.animate(it)
+        ReportPlantActivity.animate(it)
+        if (!cameFromSearchActivity) {
             finish()
-        }else{
+        } else {
             //Intent came from Search Activity
             //Start map activity
             //get latitude and longitude from Firebase to put into map intent
@@ -135,10 +114,8 @@ class DescriptionActivity : AppCompatActivity(){
             mapIntent.putExtra(IMAGE_KEY, imageURL)
             mapIntent.putExtra(NOT_A_REPORT, true)
             startActivity(mapIntent)
-
         }
     }
-
 
     companion object{
         const val TAG = "Description Activity"
@@ -150,6 +127,5 @@ class DescriptionActivity : AppCompatActivity(){
         const val DEFAULT_LAT = 38.9858
         const val DEFAULT_LONG = -76.9373
         const val NOT_A_REPORT = "Not a report"
-
     }
 }
