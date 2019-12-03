@@ -99,23 +99,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             databaseUserPlants.child(timeStamp.toString()).child("image").setValue(imageEncoded)
             databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
         } else {
-            plantName = mapIntent.getStringExtra(DescriptionActivity.PLANT_NAME_KEY).capitalizeWords()
-            plantDesc = mapIntent.getStringExtra(DescriptionActivity.PLANT_DESC_KEY)
-            val latitude = mapIntent.getDoubleExtra(DescriptionActivity.LATITUDE_KEY, DEFAULT_LAT)
-            val longitude = mapIntent.getDoubleExtra(DescriptionActivity.LONGITUDE_KEY, DEFAULT_LONG)
-            latLng = LatLng(latitude, longitude)
-            imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
+            /***Check if you're searching for a plant or searching for a plant by location ***/
+            if(mapIntent.getBooleanExtra(SearchActivity.SEARCH_FOR_PLANTS_BY_LOCATION, false)){
+                /**TEST**/
+                //Get Geocode values
+                //TODO: Default values are iffy. Change later
+                val latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
+                val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
+                Log.i(TAG, "Latitude from geocode is " + latitudeGeocode)
+                Log.i(TAG, "Longitude from geocode is " + longitudeGeocode)
+            }else{
+                plantName = mapIntent.getStringExtra(DescriptionActivity.PLANT_NAME_KEY).capitalizeWords()
+                plantDesc = mapIntent.getStringExtra(DescriptionActivity.PLANT_DESC_KEY)
+                val latitude = mapIntent.getDoubleExtra(DescriptionActivity.LATITUDE_KEY, DEFAULT_LAT)
+                val longitude = mapIntent.getDoubleExtra(DescriptionActivity.LONGITUDE_KEY, DEFAULT_LONG)
+                latLng = LatLng(latitude, longitude)
+                imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
+            }
 
-            /**TEST**/
-            //Get Geocode values
-            //TODO: Default values are iffy. Change later
-            val latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
-            val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
-            Log.i(TAG, "Latitude from geocode is " + latitudeGeocode)
-            Log.i(TAG, "Longitude from geocode is " + longitudeGeocode)
-
-
-            /****/
         }
 
         /* Add all the plants in the Plants Added To FB database previously to the map */
