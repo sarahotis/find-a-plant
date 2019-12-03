@@ -11,6 +11,8 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
+import android.location.Geocoder
+import android.location.Location
 
 
 class SearchActivity : AppCompatActivity() {
@@ -20,8 +22,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var databasePlantsByUser: DatabaseReference
     private lateinit var searchPlantButton: Button
     private lateinit var backToMainButton: Button
+    private lateinit var searchLocationButton: Button
     private lateinit var plantToFind: String
+    private lateinit var locationText: EditText
     private var found: Int = 0
+    private lateinit var geoCode : Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +44,27 @@ class SearchActivity : AppCompatActivity() {
         Log.i("Firebase", "Database Plants Added to FB referenced")
 
 
+
+
         //Go back to main button is clicked
         backToMainButton.setOnClickListener {
             val mainActivityIntent = Intent(this@SearchActivity, MainActivity::class.java)
             startActivity(mainActivityIntent)
+        }
+
+        searchLocationButton.setOnClickListener {
+            /*****TEST*****/
+            geoCode = Geocoder(this)
+            var locationText = locationText.text.toString()
+            Log.i(TAG, "Location is " + locationText)
+            var listAddress = geoCode.getFromLocationName(locationText, 10)
+            if(listAddress != null){
+                Log.i(TAG, "Array size is " + listAddress.size)
+                for(currLoc in listAddress){
+                    Log.i(TAG, "Address is " + currLoc.toString())
+                }
+            }
+            /*****END TEST****/
         }
 
         //Set on click listener for Search Button
@@ -73,6 +95,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 Log.i(TAG, "Searching through user inputs")
                 for(postSnapshot in dataSnapshot.children){
+<<<<<<< Updated upstream
 
                     val name = postSnapshot.child("common_name").value as? String
                     Log.i(TAG, "name is " + name)
@@ -89,6 +112,18 @@ class SearchActivity : AppCompatActivity() {
                             //If match found then call method to start description intent
                             callDescriptionIntent(description, name, latitude, longitude, imageURL)
                         }
+=======
+                    val name = postSnapshot.child("common_name").value as String
+                    val description = postSnapshot.child("description").value as String
+                    if(name.compareTo(plantToFind) == 0){
+                        val longitude = postSnapshot.child("longitude").value as Double
+                        val latitude = postSnapshot.child("latitude").value as Double
+                        val imageURL = postSnapshot.child("image").value as String
+                        found = 1
+                        Log.i("Search Activity", "We have a match! From User Input" )
+                        //If match found then call method to start description intent
+                        callDescriptionIntent(description, name, latitude, longitude, imageURL)
+>>>>>>> Stashed changes
                     }
                 }
 
@@ -155,6 +190,8 @@ class SearchActivity : AppCompatActivity() {
         searchText = findViewById(R.id.plant_search_text)
         searchPlantButton = findViewById(R.id.plant_search_button)
         backToMainButton = findViewById(R.id.backToMainButton)
+        locationText = findViewById(R.id.location_search_text)
+        searchLocationButton = findViewById(R.id.location_search_button)
         ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 

@@ -7,6 +7,7 @@
     <string name="enable_permissions">Click here to enable permissions</string>
     <string name="what_plant">What plant is this?</string>
     <string name="user_input_plant">Enter plant name…</string>
+    <string name="user_input_location">Enter location…</string>
     <string name="not_sure_plant">Help me identify this!</string>
     <string name="plant_description">Add description (optional)</string>
     <string name="user_input_desc">Enter additional information…</string>
@@ -19,7 +20,8 @@
     <string name="main_report_a_plant">Report A Plant</string>
     <string name="main_search_a_plant">Find A Plant</string>
     <string name="main_description">Description</string>
-    <string name="search">Search!</string>
+    <string name="search_by_plant">Search By Plant!</string>
+    <string name="search_by_location">Search By Location!</string>
     <string name="back_to_map">Return to Map</string>
     <string name="back_to_main">Return to Home</string>
     <string name="search_report_another">Find Or Report Another Plant?</string>
