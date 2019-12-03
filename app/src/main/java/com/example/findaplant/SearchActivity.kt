@@ -207,12 +207,12 @@ class SearchActivity : AppCompatActivity() {
                         }
                     }
 
-                    if (found == 0) {
-                        /*** If plant not found show Toast message ***/
-                        Log.i("Search Activity", "End of firebase loop")
-                        Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                }
+                if (found == 0) {
+                    /*** If plant not found show Toast message ***/
+                    Log.i("Search Activity", "End of firebase loop")
+                    Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
