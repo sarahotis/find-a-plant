@@ -177,7 +177,7 @@ class SearchActivity : AppCompatActivity() {
                         }
                         val name = postSnapshot.child("common_name").value as String
                         val description = postSnapshot.child("description").value as String
-                        if (name.compareTo(plantToFind) == 0) {
+                        if (name.toLowerCase().compareTo(plantToFind.toLowerCase()) == 0) {
                             val longitude = postSnapshot.child("longitude").value as Double
                             val latitude = postSnapshot.child("latitude").value as Double
                             val imageURL = postSnapshot.child("image").value as String
@@ -212,7 +212,7 @@ class SearchActivity : AppCompatActivity() {
                 for(postSnapshot in dataSnapshot.children){
                     val name = postSnapshot.child("common_name").value as? String
                     val description = postSnapshot.child("description").value as? String
-                    if(name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0){
+                    if(name != null && name.isNotEmpty() && name.toLowerCase().compareTo(plantToFind.toLowerCase()) === 0){
                         val longitude = postSnapshot.child("longitude").value as? Double
                         val latitude = postSnapshot.child("latitude").value as? Double
                         val imageURL = postSnapshot.child("image_url").value as? String
