@@ -52,7 +52,51 @@
         android:textSize="8pt"
         android:textColor="#000000"
         android:textAllCaps="false"
-        android:text="@string/search">
+        android:text="@string/search_by_plant">
+    </Button>
+
+    <EditText
+        android:id="@+id/location_search_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/plant_search_button"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="10pt"
+        android:hint="@string/user_input_location">
+    </EditText>
+
+    <Spinner
+        android:id="@+id/address_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_search_text">
+
+    </Spinner>
+
+    <Button
+        android:id="@+id/location_search_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/address_spinner"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_rounded_corners"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textSize="8pt"
+        android:textColor="#000000"
+        android:textAllCaps="false"
+        android:text="@string/search_by_location">
     </Button>
 
     <Button
@@ -61,7 +105,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/plant_search_button"
+        app:layout_constraintTop_toBottomOf="@id/location_search_button"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_rounded_corners"
