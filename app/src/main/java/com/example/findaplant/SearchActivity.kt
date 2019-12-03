@@ -52,7 +52,8 @@ class SearchActivity : AppCompatActivity() {
             plantToFind = plantToSearch
             Log.i("SearchActivity", "Plant search " + plantToSearch)
 
-            if(plantToSearch == ""){
+            //Check if plant is null or empty
+            if(plantToSearch == null || plantToSearch == ""){
                 val pleaseEnterPlantText = Toast.makeText(applicationContext, "Please provide a plant.", Toast.LENGTH_SHORT)
                 pleaseEnterPlantText.show()
             }else{
@@ -72,16 +73,22 @@ class SearchActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 Log.i(TAG, "Searching through user inputs")
                 for(postSnapshot in dataSnapshot.children){
-                    val name = postSnapshot.child("common_name").value as String
-                    val description = postSnapshot.child("description").value as String
-                    if(name.compareTo(plantToFind) === 0){
-                        val longitude = postSnapshot.child("longitude").value as Double
-                        val latitude = postSnapshot.child("latitude").value as Double
-                        val imageURL = postSnapshot.child("image").value as String
-                        found = 1
-                        Log.i("Search Activity", "We have a match! From User Input" )
-                        //If match found then call method to start description intent
-                        callDescriptionIntent(description, name, latitude, longitude, imageURL)
+
+                    val name = postSnapshot.child("common_name").value as? String
+                    Log.i(TAG, "name is " + name)
+                    val description = postSnapshot.child("description").value as? String
+                    if(name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0){
+                        val longitude = postSnapshot.child("longitude").value as? Double
+                        val latitude = postSnapshot.child("latitude").value as? Double
+                        val imageURL = postSnapshot.child("image").value as? String
+
+                        //Null checks
+                        if(longitude != null && latitude != null && imageURL != null && description != null){
+                            Log.i("Search Activity", "We have a match! From User Input" )
+                            found = 1
+                            //If match found then call method to start description intent
+                            callDescriptionIntent(description, name, latitude, longitude, imageURL)
+                        }
                     }
                 }
 
@@ -92,8 +99,8 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Report Firebase", "Failed to read data", error.toException())
             }
         })
     }
@@ -104,22 +111,27 @@ class SearchActivity : AppCompatActivity() {
         databasePlants.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(postSnapshot in dataSnapshot.children){
-                    val name = postSnapshot.child("common_name").value as String
-                    val description = postSnapshot.child("description").value as String
-                    if(name.compareTo(plantToFind) === 0){
-                        val longitude = postSnapshot.child("longitude").value as Double
-                        val latitude = postSnapshot.child("latitude").value as Double
-                        val imageURL = postSnapshot.child("image_url").value as String
-                        found = 1
-                        Log.i("Search Activity", "We have a match! From iNaturalist" )
-                        //If match found then call method to start description intent
-                        callDescriptionIntent(description, name, latitude, longitude, imageURL)
+                    val name = postSnapshot.child("common_name").value as? String
+                    val description = postSnapshot.child("description").value as? String
+                    if(name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0){
+                        val longitude = postSnapshot.child("longitude").value as? Double
+                        val latitude = postSnapshot.child("latitude").value as? Double
+                        val imageURL = postSnapshot.child("image_url").value as? String
+
+                        //Null checks
+                        if(longitude != null && latitude != null && imageURL != null && description != null){
+                            //If match found then call method to start description intent
+                            Log.i("Search Activity", "We have a match! From iNaturalist" )
+                            found = 1
+                            callDescriptionIntent(description, name, latitude, longitude, imageURL)
+                        }
+
                     }
                 }
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Report Firebase", "Failed to read data", error.toException())
             }
         })
     }

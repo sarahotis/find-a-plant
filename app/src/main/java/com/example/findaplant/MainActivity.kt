@@ -21,6 +21,12 @@ class MainActivity : AppCompatActivity() {
 
         initializeViews()
         Log.i(TAG, "In Main Activity")
+        //TODO: Have user enter a special userid
+        var user = mAuth!!.currentUser
+        if(user != null){
+            Log.i(TAG, "Current user is " + user.email)
+        }
+
 
         reportBtn!!.setOnClickListener {
             ReportPlantActivity.animate(it)

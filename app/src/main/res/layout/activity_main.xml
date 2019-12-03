@@ -52,35 +52,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.9"/>
 
-<!--    <Button-->
-<!--        android:id="@+id/search"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        android:layout_margin="20dp"-->
-<!--        android:background="@drawable/button_rounded_corners"-->
-<!--        android:padding="10dp"-->
-<!--        android:textColor="#000000"-->
-<!--        android:textSize="8pt"-->
-<!--        android:textAllCaps="false"-->
-<!--        android:text="@string/main_search_a_plant" />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/description"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@drawable/button_rounded_corners"-->
-<!--        android:layout_margin="20dp"-->
-<!--        android:padding="10dp"-->
-<!--        android:textColor="#000000"-->
-<!--        android:textSize="8pt"-->
-<!--        android:textAllCaps="false"-->
-<!--        android:text="@string/main_description"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        app:layout_constraintRight_toRightOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.9"/>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
