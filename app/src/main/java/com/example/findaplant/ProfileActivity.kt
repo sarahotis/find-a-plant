@@ -20,6 +20,7 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_profile)
+        mAuth = FirebaseAuth.getInstance()
 
         userInfo = findViewById(R.id.user)
         loggedIn = findViewById(R.id.LoggedIn)
