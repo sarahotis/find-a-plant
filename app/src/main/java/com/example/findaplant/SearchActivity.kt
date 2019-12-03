@@ -52,7 +52,13 @@ class SearchActivity : AppCompatActivity() {
         //TODO: Show a list of addresses and ask user to pick
         //Create an adapter containing a list of addresses
         searchLocationButton.setOnClickListener {
-            createAddressList()
+            var locationText = locationText.text.toString()
+            Log.i(TAG, "Location is " + locationText)
+            if(locationText.isEmpty()){
+                Toast.makeText(applicationContext, "Please provide a location. ", Toast.LENGTH_SHORT).show()
+            }else{
+                createAddressList(locationText)
+            }
         }
 
         //Set on click listener for Search Button
@@ -78,10 +84,9 @@ class SearchActivity : AppCompatActivity() {
     /***This method occurs when the Get Location button is pressed. It
      * finds addresses relating to the location text and creates a spinner
      * of possible matched address***/
-    private fun createAddressList(){
+    private fun createAddressList(locationText : String){
         geoCode = Geocoder(this)
-        var locationText = locationText.text.toString()
-        Log.i(TAG, "Location is " + locationText)
+
         var listAddress = geoCode.getFromLocationName(locationText, 10)
         //Create adapter
         if(listAddress != null){
