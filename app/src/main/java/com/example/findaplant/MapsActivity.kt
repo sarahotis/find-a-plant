@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
@@ -32,6 +33,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var plantDesc : String
     private lateinit var latLng: LatLng
     private var imageURL: String? = null
+    private var latitudeGeocode: Double? = 0.0
+    private var longitudeGeocode: Double? = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //TODO: Have a label on the plant made when entering the map to know which plant we're looking for
@@ -78,8 +81,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val databaseUserPlants = database.getReference("User Plants")
 
         val notAPlantReport = mapIntent.getBooleanExtra(DescriptionActivity.NOT_A_REPORT, false)
-        //If it's not a plant report then no need to put plant info into User Plants database
-        if(!notAPlantReport){
+        val searchPlantsBasedOnLocation = mapIntent.getBooleanExtra(SearchActivity.SEARCH_FOR_PLANTS_BY_LOCATION, false)
+        /*** If it's not a plant report then no need to put plant info into User Plants database and
+         * we're not searching for a plant based on location.
+         */
+        if(!notAPlantReport && !searchPlantsBasedOnLocation){
             // Get name, description, location, and image that user reported
             plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
             plantDesc = mapIntent.getStringExtra(ReportPlantActivity.PLANT_DESC_KEY)
@@ -99,22 +105,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             databaseUserPlants.child(timeStamp.toString()).child("image").setValue(imageEncoded)
             databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
         } else {
-            /***Check if you're searching for a plant or searching for a plant by location ***/
-            if(mapIntent.getBooleanExtra(SearchActivity.SEARCH_FOR_PLANTS_BY_LOCATION, false)){
-                /**TEST**/
-                //Get Geocode values
+            //If searching for a plant
+            if(searchPlantsBasedOnLocation){
+
+                //If searching for a plant by locations
                 //TODO: Default values are iffy. Change later
-                val latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
-                val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
+                latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, 0.0)
+                longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, 0.0)
                 Log.i(TAG, "Latitude from geocode is " + latitudeGeocode)
                 Log.i(TAG, "Longitude from geocode is " + longitudeGeocode)
             }else{
+
                 plantName = mapIntent.getStringExtra(DescriptionActivity.PLANT_NAME_KEY).capitalizeWords()
                 plantDesc = mapIntent.getStringExtra(DescriptionActivity.PLANT_DESC_KEY)
                 val latitude = mapIntent.getDoubleExtra(DescriptionActivity.LATITUDE_KEY, DEFAULT_LAT)
                 val longitude = mapIntent.getDoubleExtra(DescriptionActivity.LONGITUDE_KEY, DEFAULT_LONG)
                 latLng = LatLng(latitude, longitude)
                 imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
+
+
             }
 
         }
@@ -131,13 +140,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         val datLong = postSnapshot.child("longitude").value as? Double
                         val imageURL = postSnapshot.child("image_url").value as? String
 
-                        // Add plant marker to map
-                        val datLocation = LatLng(datLat!!, datLong!!)
-                        val datMarker = mMap.addMarker(MarkerOptions()
-                            .position(datLocation)
-                            .title(name.capitalizeWords())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
-                        datMarker.tag = imageURL // Tag used to store image of plant on marker
+                        if (notAPlantReport) { // Only add marker if within provided location range
+                            val latitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
+                            val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
+                            if (latitudeGeocode != 0.0 && longitudeGeocode != 0.0
+                                && withinRange(latitudeGeocode, longitudeGeocode, datLat!!, datLong!!)) {
+                                // Add plant marker to map
+                                val datLocation = LatLng(datLat!!, datLong!!)
+                                val datMarker = mMap.addMarker(
+                                    MarkerOptions()
+                                        .position(datLocation)
+                                        .title(name.capitalizeWords())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                ) // can also use R.drawable.plant
+                                datMarker.tag = imageURL // Tag used to store image of plant on marker
+                            }
+                        } else {
+                            // Add plant marker to map
+                            val datLocation = LatLng(datLat!!, datLong!!)
+                            val datMarker = mMap.addMarker(
+                                MarkerOptions()
+                                    .position(datLocation)
+                                    .title(name.capitalizeWords())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                            ) // can also use R.drawable.plant
+                            datMarker.tag = imageURL // Tag used to store image of plant on marker
+                        }
                     }
                 }
             }
@@ -161,33 +189,70 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     // Add plant marker to map
                     if (datLat != null && datLong != null && datDesc != null && datImage != null) {
-                        val datLocation = LatLng(datLat!!, datLong!!)
-                        lateinit var datMarker: Marker
-                        if (datDesc!!.isEmpty()) {
-                            datMarker = mMap.addMarker(
-                                MarkerOptions()
-                                    .position(datLocation)
-                                    .title(name.capitalizeWords())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
-                            ) // can also use R.drawable.plant
+                        if (notAPlantReport) { // Only add marker within range
+                            val latitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
+                            val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
+                            if (latitudeGeocode != 0.0 && longitudeGeocode != 0.0
+                                && withinRange(latitudeGeocode, longitudeGeocode, datLat!!, datLong!!)) {
+                                val datLocation = LatLng(datLat!!, datLong!!)
+                                lateinit var datMarker: Marker
+                                if (datDesc.isEmpty()) {
+                                    datMarker = mMap.addMarker(
+                                        MarkerOptions()
+                                            .position(datLocation)
+                                            .title(name.capitalizeWords())
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                    ) // can also use R.drawable.plant
+                                } else {
+                                    datMarker = mMap.addMarker(
+                                        MarkerOptions()
+                                            .position(datLocation)
+                                            .title(name.capitalizeWords())
+                                            .snippet(datDesc)
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                    ) // can also use R.drawable.plant
+                                }
+                                //If its a plant report put marker on last entry
+                                datMarker.tag =
+                                    datImage // Tag used to store image of plant on marker
+                                if (!notAPlantReport) {
+                                    mMap.moveCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            datLocation,
+                                            INITIAL_ZOOM_LEVEL
+                                        )
+                                    )
+                                }
+                            }
                         } else {
-                            datMarker = mMap.addMarker(
-                                MarkerOptions()
-                                    .position(datLocation)
-                                    .title(name.capitalizeWords())
-                                    .snippet(datDesc)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
-                            ) // can also use R.drawable.plant
-                        }
-                        //If its a plant report put marker on last entry
-                        datMarker.tag = datImage // Tag used to store image of plant on marker
-                        if (!notAPlantReport) {
-                            mMap.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    datLocation,
-                                    INITIAL_ZOOM_LEVEL
+                            val datLocation = LatLng(datLat!!, datLong!!)
+                            lateinit var datMarker: Marker
+                            if (datDesc.isEmpty()) {
+                                datMarker = mMap.addMarker(
+                                    MarkerOptions()
+                                        .position(datLocation)
+                                        .title(name.capitalizeWords())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                ) // can also use R.drawable.plant
+                            } else {
+                                datMarker = mMap.addMarker(
+                                    MarkerOptions()
+                                        .position(datLocation)
+                                        .title(name.capitalizeWords())
+                                        .snippet(datDesc)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                ) // can also use R.drawable.plant
+                            }
+                            //If its a plant report put marker on last entry
+                            datMarker.tag = datImage // Tag used to store image of plant on marker
+                            if (!notAPlantReport) {
+                                mMap.moveCamera(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        datLocation,
+                                        INITIAL_ZOOM_LEVEL
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
@@ -198,9 +263,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        /** Check if plant is searched in the database or reported. If searched move
+        /** Check if plant is searched in the database or reported. Also check if
+         * we're searching for a plant or plants in a location. If searching for plant then move
         marker to searched plant location **/
-        if(notAPlantReport){
+        if(notAPlantReport && !searchPlantsBasedOnLocation){
             //Plant information came from DescriptionActivity
             if(plantDesc.isNotEmpty()) {
                 val datMarker = mMap.addMarker(MarkerOptions()
@@ -217,7 +283,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
+        }else{
+            //Location is being searched so move camera to location searched
+            val searchedLocation = LatLng(latitudeGeocode!!, longitudeGeocode!!)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(searchedLocation, INITIAL_ZOOM_LEVEL))
         }
+
 
         // Max zoom out level (20 = buildings, 1 = world)
         mMap.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
@@ -236,6 +307,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun String.capitalizeWords(): String = split(" ").map { it.capitalize() }.joinToString(" ")
 
+    /** Return true if start location is within MAX_DISTANCE_METERS of end location */
+    fun withinRange(startLatitude : Double, startLongitude : Double,
+                    endLatitude : Double, endLongitude : Double) : Boolean {
+        val results = FloatArray(1)
+        Location.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude, results)
+        Log.d(TAG, "results[0]: " + results[0])
+        return results[0] < MAX_DISTANCE_METERS
+    }
+
     companion object {
         const val TITLE_KEY = "TITLE_KEY_FROM_MAP"
         const val DESCRIPTION_KEY = "DESCRIPTION_KEY_FROM_MAP"
@@ -245,6 +325,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Note: Default lat/long is UMD
         const val DEFAULT_LAT = 38.9858
         const val DEFAULT_LONG = -76.9373
+        const val MAX_DISTANCE_METERS = 100
         const val TAG = "Map Activity"
     }
 }
