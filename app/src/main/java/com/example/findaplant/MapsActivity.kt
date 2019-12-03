@@ -140,7 +140,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         val datLong = postSnapshot.child("longitude").value as? Double
                         val imageURL = postSnapshot.child("image_url").value as? String
 
-                        if (notAPlantReport) { // Only add marker if within provided location range
+                        if (searchPlantsBasedOnLocation) { // Only add marker if within provided location range
                             val latitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
                             val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
                             if (latitudeGeocode != 0.0 && longitudeGeocode != 0.0
@@ -189,7 +189,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     // Add plant marker to map
                     if (datLat != null && datLong != null && datDesc != null && datImage != null) {
-                        if (notAPlantReport) { // Only add marker within range
+                        if (searchPlantsBasedOnLocation) { // Only add marker within range
                             val latitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
                             val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)
                             if (latitudeGeocode != 0.0 && longitudeGeocode != 0.0
