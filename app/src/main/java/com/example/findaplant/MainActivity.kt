@@ -60,13 +60,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notLoggedIn(): Boolean {
-//        //check if current user is null
-//        Log.i(TAG, "Current user is " + mAuth!!.currentUser)
-//        if(mAuth!!.currentUser == null){
-//            return true
-//        }
+        //check if current user is null
+        Log.i(TAG, "Current user is " + mAuth!!.currentUser)
+        if(mAuth!!.currentUser == null){
+            return true
+        }
 
-        return true
+        return false
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
