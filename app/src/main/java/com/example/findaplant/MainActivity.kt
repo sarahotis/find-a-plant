@@ -57,17 +57,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notLoggedIn(): Boolean {
-        //check if current user is null
-        Log.i(TAG, "Current user is " + mAuth!!.currentUser)
-        if(mAuth!!.currentUser == null){
-            return true
-        }
+//        //check if current user is null
+//        Log.i(TAG, "Current user is " + mAuth!!.currentUser)
+//        if(mAuth!!.currentUser == null){
+//            return true
+//        }
 
-        return false
-
-        //return true //switched on for developing Registration and Login
-        //SharedPreferences
-        //TODO: move firebase login checking here to save the user a step
+        return true
     }
 
     companion object{

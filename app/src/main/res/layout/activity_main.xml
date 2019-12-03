@@ -9,14 +9,33 @@
     android:background="#66EDD892">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="FindAPlant"
+        android:padding="20dp"
+        android:layout_marginBottom="60dp"
+        android:text="Welcome to FindAPlant"
+        android:fontFamily='sans-serif-condensed'
+        android:textSize="12pt"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.321" />
+        android:gravity="center"
+        app:layout_constraintVertical_bias="0.12">
+    </TextView>
+
+    <ImageView
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/leaf"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"/>
 
     <Button
         android:id="@+id/centered_search"
@@ -33,7 +52,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.621"/>
+        app:layout_constraintVertical_bias="0.6"/>
 
     <Button
         android:id="@+id/report"
@@ -50,7 +69,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9"/>
+        app:layout_constraintVertical_bias="0.8"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
