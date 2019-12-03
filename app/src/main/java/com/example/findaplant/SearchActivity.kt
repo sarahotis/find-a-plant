@@ -94,43 +94,42 @@ class SearchActivity : AppCompatActivity() {
         databasePlantsByUser.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 Log.i(TAG, "Searching through user inputs")
-                for(postSnapshot in dataSnapshot.children){
-<<<<<<< Updated upstream
+                for (postSnapshot in dataSnapshot.children) {
 
                     val name = postSnapshot.child("common_name").value as? String
                     Log.i(TAG, "name is " + name)
                     val description = postSnapshot.child("description").value as? String
-                    if(name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0){
+                    if (name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0) {
                         val longitude = postSnapshot.child("longitude").value as? Double
                         val latitude = postSnapshot.child("latitude").value as? Double
                         val imageURL = postSnapshot.child("image").value as? String
 
                         //Null checks
-                        if(longitude != null && latitude != null && imageURL != null && description != null){
-                            Log.i("Search Activity", "We have a match! From User Input" )
+                        if (longitude != null && latitude != null && imageURL != null && description != null) {
+                            Log.i("Search Activity", "We have a match! From User Input")
                             found = 1
                             //If match found then call method to start description intent
                             callDescriptionIntent(description, name, latitude, longitude, imageURL)
                         }
-=======
-                    val name = postSnapshot.child("common_name").value as String
-                    val description = postSnapshot.child("description").value as String
-                    if(name.compareTo(plantToFind) == 0){
-                        val longitude = postSnapshot.child("longitude").value as Double
-                        val latitude = postSnapshot.child("latitude").value as Double
-                        val imageURL = postSnapshot.child("image").value as String
-                        found = 1
-                        Log.i("Search Activity", "We have a match! From User Input" )
-                        //If match found then call method to start description intent
-                        callDescriptionIntent(description, name, latitude, longitude, imageURL)
->>>>>>> Stashed changes
+                        val name = postSnapshot.child("common_name").value as String
+                        val description = postSnapshot.child("description").value as String
+                        if (name.compareTo(plantToFind) == 0) {
+                            val longitude = postSnapshot.child("longitude").value as Double
+                            val latitude = postSnapshot.child("latitude").value as Double
+                            val imageURL = postSnapshot.child("image").value as String
+                            found = 1
+                            Log.i("Search Activity", "We have a match! From User Input")
+                            //If match found then call method to start description intent
+                            callDescriptionIntent(description, name, latitude, longitude, imageURL)
+                        }
                     }
-                }
 
-                if(found == 0){
-                    /*** If plant not found show Toast message ***/
-                    Log.i("Search Activity", "End of firebase loop")
-                    Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT).show()
+                    if (found == 0) {
+                        /*** If plant not found show Toast message ***/
+                        Log.i("Search Activity", "End of firebase loop")
+                        Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
 
@@ -139,6 +138,7 @@ class SearchActivity : AppCompatActivity() {
             }
         })
     }
+
 
     //TODO: Have search look at user inputs and iNaturalist data
     private fun searchPlantInputs(){
