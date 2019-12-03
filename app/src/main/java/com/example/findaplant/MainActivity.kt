@@ -1,12 +1,15 @@
 package com.example.findaplant
 
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.EventLogTags
 import android.widget.Button
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import android.view.MenuItem
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,6 +67,19 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_account -> {
+            startActivity(Intent(this@MainActivity, ProfileActivity::class.java))
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
 
     companion object{
