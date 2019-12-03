@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import java.io.ByteArrayOutputStream
+import android.widget.Toast
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -31,6 +32,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //TODO: Have a label on the plant made when entering the map to know which plant we're looking for
+        Toast.makeText(this, "Loading map...",
+            Toast.LENGTH_LONG).show();
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -59,6 +62,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /*** Check if intent came from ReportPlantActivity or is a plant that is searched in the database***/
     override fun onMapReady(googleMap: GoogleMap) {
+        Toast.makeText(this, "Click plant names for more info!",
+            Toast.LENGTH_LONG).show();
         Log.i(TAG, "Entered onMapReady")
         mMap = googleMap
         val mapIntent = intent
