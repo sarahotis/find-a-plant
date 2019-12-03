@@ -215,7 +215,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 //If its a plant report put marker on last entry
                                 datMarker.tag =
                                     datImage // Tag used to store image of plant on marker
-                                if (!notAPlantReport) {
+                                if (!notAPlantReport && !searchPlantsBasedOnLocation) {
                                     mMap.moveCamera(
                                         CameraUpdateFactory.newLatLngZoom(
                                             datLocation,
@@ -245,7 +245,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             }
                             //If its a plant report put marker on last entry
                             datMarker.tag = datImage // Tag used to store image of plant on marker
-                            if (!notAPlantReport) {
+                            if (!notAPlantReport && !searchPlantsBasedOnLocation) {
                                 mMap.moveCamera(
                                     CameraUpdateFactory.newLatLngZoom(
                                         datLocation,
