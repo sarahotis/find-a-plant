@@ -94,6 +94,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val longitude = mapIntent.getDoubleExtra(DescriptionActivity.LONGITUDE_KEY, DEFAULT_LONG)
             latLng = LatLng(latitude, longitude)
             imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
+
+            /**TEST**/
+            //Get Geocode values
+            //TODO: Default values are iffy. Change later
+            val latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, 0.0)
+            val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, 0.0)
+            Log.i(TAG, "Latitude from geocode is " + latitudeGeocode)
+            Log.i(TAG, "Longitude from geocode is " + longitudeGeocode)
+
+
+            /****/
         }
 
 

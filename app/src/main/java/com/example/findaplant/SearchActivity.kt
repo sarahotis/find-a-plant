@@ -90,9 +90,9 @@ class SearchActivity : AppCompatActivity() {
 
             var addressList = ArrayList<String>()
             Log.i(TAG, "Array size is " + listAddress.size)
+            addressList.add("No address")
             for(currLoc in listAddress){
                 val address = currLoc.getAddressLine(0)
-                Log.i(TAG, "Address is " + address)
                 addressList.add(address)
             }
 
@@ -104,6 +104,7 @@ class SearchActivity : AppCompatActivity() {
             spinner.adapter = adapter
 
             spinner.setOnTouchListener { v: View, _ ->
+                Log.i(TAG, "Touched is true")
                 wasTouched = true
                 v.performClick()
                 false
@@ -116,12 +117,22 @@ class SearchActivity : AppCompatActivity() {
                     pos: Int, id: Long
                 ) {
                     if (wasTouched) {
-                        Log.i(TAG, "Address is " + parent.getItemAtPosition(pos).toString())
-                        Toast.makeText(applicationContext, "Address selected! ", Toast.LENGTH_SHORT)
-                            .show()
-                        latitudeFromGeocoder = listAddress[pos].latitude
-                        longitudeFromGeocoder = listAddress[pos].longitude
-                        Log.i(TAG, "Address is from list address " + listAddress[pos].getAddressLine(0))
+                        if(pos > 0){
+                            Log.i(TAG, "Address is " + parent.getItemAtPosition(pos).toString())
+                            Toast.makeText(applicationContext, "Address selected! ", Toast.LENGTH_SHORT)
+                                .show()
+                            Log.i(TAG, "pos is " + pos)
+                            latitudeFromGeocoder = listAddress[pos - 1]!!.latitude
+                            longitudeFromGeocoder = listAddress[pos - 1]!!.longitude
+
+                            Log.i(TAG, "Address is from list address " + listAddress[pos - 1].getAddressLine(0))
+                        }else{
+                            latitudeFromGeocoder = null
+                            longitudeFromGeocoder = null
+                            Toast.makeText(applicationContext, "No address selected ", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
                         wasTouched = false
                     }
                 }
@@ -230,6 +241,9 @@ class SearchActivity : AppCompatActivity() {
         descriptionActivityIntent.putExtra(LATITUDE, latitude)
         descriptionActivityIntent.putExtra(LONGITUDE, longitude)
         descriptionActivityIntent.putExtra(IMAGE_KEY, imageURL)
+        Log.i(TAG, "Lat " + latitudeFromGeocoder + "Long " + longitudeFromGeocoder)
+        descriptionActivityIntent.putExtra(LATITUDE_FROM_GEOCODER, latitudeFromGeocoder)
+        descriptionActivityIntent.putExtra(LONGITUDE_FROM_GEOCODER, longitudeFromGeocoder)
         startActivity(descriptionActivityIntent)
 
     }
@@ -250,5 +264,7 @@ class SearchActivity : AppCompatActivity() {
         const val LATITUDE = "LATITUDE_FROM_SEARCH"
         const val LONGITUDE = "LONGITUDE_FROM_SEARCH"
         const val IMAGE_KEY = "IMAGE_KEY_FROM_SEARCH"
+        const val LATITUDE_FROM_GEOCODER = "LATITUDE_FROM_SEARCH_FROM_GEOCODER"
+        const val LONGITUDE_FROM_GEOCODER = "LONGITUDE_FROM_SEARCH_FROM_GEOCODER"
     }
 }
