@@ -71,13 +71,23 @@
         android:hint="@string/user_input_location">
     </EditText>
 
+    <Spinner
+        android:id="@+id/address_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_search_text">
+
+    </Spinner>
+
     <Button
         android:id="@+id/location_search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_search_text"
+        app:layout_constraintTop_toBottomOf="@id/address_spinner"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_rounded_corners"

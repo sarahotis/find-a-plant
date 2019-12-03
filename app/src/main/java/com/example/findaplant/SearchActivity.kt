@@ -4,15 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import com.google.firebase.database.*
-import java.util.*
 import kotlin.collections.ArrayList
 import android.location.Geocoder
-import android.location.Location
+import android.view.View
+import android.widget.*
 
 
 class SearchActivity : AppCompatActivity() {
@@ -27,15 +23,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var locationText: EditText
     private var found: Int = 0
     private lateinit var geoCode : Geocoder
+    private var wasTouched : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_plant_layout)
         initializeViews()
         Log.i("SearchActivity", "OnCreate launched")
-
-        //TODO: Account for upper/lower case letters. white spaces
-
 
         //get instance of database
         val database = FirebaseDatabase.getInstance()
@@ -52,18 +46,66 @@ class SearchActivity : AppCompatActivity() {
             startActivity(mainActivityIntent)
         }
 
+        //TODO: Show a list of addresses and ask user to pick
+        //Create an adapter containing a list of addresses
         searchLocationButton.setOnClickListener {
             /*****TEST*****/
             geoCode = Geocoder(this)
             var locationText = locationText.text.toString()
             Log.i(TAG, "Location is " + locationText)
             var listAddress = geoCode.getFromLocationName(locationText, 10)
+            //Create adapter
             if(listAddress != null){
+                // Get a reference to the Spinner
+                val spinner = findViewById<Spinner>(R.id.address_spinner)
+
+                var addressList = ArrayList<String>()
                 Log.i(TAG, "Array size is " + listAddress.size)
                 for(currLoc in listAddress){
-                    Log.i(TAG, "Address is " + currLoc.toString())
+                    val address = currLoc.getAddressLine(0)
+                    Log.i(TAG, "Address is " + address)
+                    addressList.add(address)
                 }
+
+                // Create an Adapter that holds a list of addresses
+                val adapter = ArrayAdapter(
+                    this, R.layout.list_layout_test,addressList)
+
+                //set Spinner to adapter
+                spinner.adapter = adapter
+
+                spinner.setOnTouchListener { v: View, _ ->
+                    wasTouched = true
+                    v.performClick()
+                    false
+                }
+
+                // Set an onItemSelectedListener on the spinner
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>, view: View,
+                        pos: Int, id: Long
+                    ) {
+
+                        if (wasTouched) {
+
+                            Log.i(TAG, "Address is " + parent.getItemAtPosition(pos).toString())
+                            wasTouched = false
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
+
+//                //Start AddressListActivity and put arraylist as intent
+//                val addressListIntent = Intent(this, AddressListActivity::class.java)
+//                addressListIntent.putStringArrayListExtra("AddressList", addressList)
+//                startActivity(addressListIntent)
+            }else{
+                Toast.makeText(applicationContext, "Address not found. ", Toast.LENGTH_SHORT)
+                    .show()
             }
+
             /*****END TEST****/
         }
 
