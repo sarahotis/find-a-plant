@@ -24,6 +24,9 @@ class SearchActivity : AppCompatActivity() {
     private var found: Int = 0
     private lateinit var geoCode : Geocoder
     private var wasTouched : Boolean = false
+    private var latitudeFromGeocoder: Double? = null
+    private var longitudeFromGeocoder: Double? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,64 +52,7 @@ class SearchActivity : AppCompatActivity() {
         //TODO: Show a list of addresses and ask user to pick
         //Create an adapter containing a list of addresses
         searchLocationButton.setOnClickListener {
-            /*****TEST*****/
-            geoCode = Geocoder(this)
-            var locationText = locationText.text.toString()
-            Log.i(TAG, "Location is " + locationText)
-            var listAddress = geoCode.getFromLocationName(locationText, 10)
-            //Create adapter
-            if(listAddress != null){
-                // Get a reference to the Spinner
-                val spinner = findViewById<Spinner>(R.id.address_spinner)
-
-                var addressList = ArrayList<String>()
-                Log.i(TAG, "Array size is " + listAddress.size)
-                for(currLoc in listAddress){
-                    val address = currLoc.getAddressLine(0)
-                    Log.i(TAG, "Address is " + address)
-                    addressList.add(address)
-                }
-
-                // Create an Adapter that holds a list of addresses
-                val adapter = ArrayAdapter(
-                    this, R.layout.list_layout_test,addressList)
-
-                //set Spinner to adapter
-                spinner.adapter = adapter
-
-                spinner.setOnTouchListener { v: View, _ ->
-                    wasTouched = true
-                    v.performClick()
-                    false
-                }
-
-                // Set an onItemSelectedListener on the spinner
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>, view: View,
-                        pos: Int, id: Long
-                    ) {
-
-                        if (wasTouched) {
-
-                            Log.i(TAG, "Address is " + parent.getItemAtPosition(pos).toString())
-                            wasTouched = false
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
-                }
-
-//                //Start AddressListActivity and put arraylist as intent
-//                val addressListIntent = Intent(this, AddressListActivity::class.java)
-//                addressListIntent.putStringArrayListExtra("AddressList", addressList)
-//                startActivity(addressListIntent)
-            }else{
-                Toast.makeText(applicationContext, "Address not found. ", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            /*****END TEST****/
+            createAddressList()
         }
 
         //Set on click listener for Search Button
@@ -127,6 +73,66 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    /***This method occurs when the Get Location button is pressed. It
+     * finds addresses relating to the location text and creates a spinner
+     * of possible matched address***/
+    private fun createAddressList(){
+        geoCode = Geocoder(this)
+        var locationText = locationText.text.toString()
+        Log.i(TAG, "Location is " + locationText)
+        var listAddress = geoCode.getFromLocationName(locationText, 10)
+        //Create adapter
+        if(listAddress != null){
+            // Get a reference to the Spinner
+            val spinner = findViewById<Spinner>(R.id.address_spinner)
+
+            var addressList = ArrayList<String>()
+            Log.i(TAG, "Array size is " + listAddress.size)
+            for(currLoc in listAddress){
+                val address = currLoc.getAddressLine(0)
+                Log.i(TAG, "Address is " + address)
+                addressList.add(address)
+            }
+
+            // Create an Adapter that holds a list of addresses
+            val adapter = ArrayAdapter(
+                this, R.layout.list_layout_test,addressList)
+
+            //set Spinner to adapter
+            spinner.adapter = adapter
+
+            spinner.setOnTouchListener { v: View, _ ->
+                wasTouched = true
+                v.performClick()
+                false
+            }
+
+            // Set an onItemSelectedListener on the spinner
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>, view: View,
+                    pos: Int, id: Long
+                ) {
+                    if (wasTouched) {
+                        Log.i(TAG, "Address is " + parent.getItemAtPosition(pos).toString())
+                        Toast.makeText(applicationContext, "Address selected! ", Toast.LENGTH_SHORT)
+                            .show()
+                        latitudeFromGeocoder = listAddress[pos].latitude
+                        longitudeFromGeocoder = listAddress[pos].longitude
+                        Log.i(TAG, "Address is from list address " + listAddress[pos].getAddressLine(0))
+                        wasTouched = false
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+        }else{
+            //Address not found. Make toast
+            Toast.makeText(applicationContext, "Address not found. ", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     //Search firebase for plant if found then start DescriptionActivity. Else make toast that plant
