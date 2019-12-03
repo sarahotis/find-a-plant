@@ -80,7 +80,7 @@ class ProfileActivity : AppCompatActivity() {
         //TODO: add oncomplete listener
         Toast.makeText(this, "Logged out!",
             Toast.LENGTH_LONG).show();
-
+        startActivity(Intent( this@ProfileActivity, MainActivity::class.java))
     }
 }
 
