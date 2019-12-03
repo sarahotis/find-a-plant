@@ -1,27 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#66EDD892">
 
-   <TextView
-       android:id="@+id/searchPlant"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintRight_toRightOf="parent"
-       app:layout_constraintLeft_toLeftOf="parent"
-       app:layout_constraintVertical_bias="0.2"
-       android:text="@string/main_search_a_plant"
-       android:textSize="14pt"
-       android:gravity="center"
-       android:fontFamily='sans-serif-condensed'
-       android:textColor="#000000">
-   </TextView>
+ <ImageView
+     android:id="@+id/searchIcon"
+     android:layout_width="89dp"
+     android:layout_height="99dp"
+     android:layout_marginTop="68dp"
+     android:src="@drawable/search"
+     app:layout_constraintHorizontal_bias="0.54"
+     app:layout_constraintLeft_toLeftOf="parent"
+     app:layout_constraintRight_toRightOf="parent"
+     app:layout_constraintTop_toTopOf="parent"></ImageView>
 
-    <EditText
+ <TextView
+     android:id="@+id/searchPlant"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:fontFamily='sans-serif-condensed'
+     android:gravity="center"
+     android:text="@string/main_search_a_plant"
+     android:textColor="#000000"
+     android:textSize="14pt"
+     app:layout_constraintBottom_toBottomOf="parent"
+     app:layout_constraintHorizontal_bias="0.0"
+     app:layout_constraintLeft_toLeftOf="parent"
+     app:layout_constraintRight_toRightOf="parent"
+     app:layout_constraintTop_toTopOf="parent"
+     app:layout_constraintVertical_bias="0.285"></TextView>
+
+ <EditText
         android:id="@+id/plant_search_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
