@@ -182,7 +182,7 @@ class SearchActivity : AppCompatActivity() {
                     val name = postSnapshot.child("common_name").value as? String
                     Log.i(TAG, "name is " + name)
                     val description = postSnapshot.child("description").value as? String
-                    if (name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0) {
+                    if (name != null && name.isNotEmpty() && name.toLowerCase().compareTo(plantToFind.toLowerCase()) === 0) {
                         val longitude = postSnapshot.child("longitude").value as? Double
                         val latitude = postSnapshot.child("latitude").value as? Double
                         val imageURL = postSnapshot.child("image").value as? String
@@ -191,17 +191,6 @@ class SearchActivity : AppCompatActivity() {
                         if (longitude != null && latitude != null && imageURL != null && description != null) {
                             Log.i("Search Activity", "We have a match! From User Input")
                             found = 1
-                            //If match found then call method to start description intent
-                            callDescriptionIntent(description, name, latitude, longitude, imageURL)
-                        }
-                        val name = postSnapshot.child("common_name").value as String
-                        val description = postSnapshot.child("description").value as String
-                        if (name.toLowerCase().compareTo(plantToFind.toLowerCase()) == 0) {
-                            val longitude = postSnapshot.child("longitude").value as Double
-                            val latitude = postSnapshot.child("latitude").value as Double
-                            val imageURL = postSnapshot.child("image").value as String
-                            found = 1
-                            Log.i("Search Activity", "We have a match! From User Input")
                             //If match found then call method to start description intent
                             callDescriptionIntent(description, name, latitude, longitude, imageURL)
                         }

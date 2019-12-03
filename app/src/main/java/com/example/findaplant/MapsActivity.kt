@@ -33,8 +33,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var plantDesc : String
     private lateinit var latLng: LatLng
     private var imageURL: String? = null
-    private var latitudeGeocode: Double? = 0.0
-    private var longitudeGeocode: Double? = 0.0
+    private var latitudeGeocode: Double = 0.0
+    private var longitudeGeocode: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //TODO: Have a label on the plant made when entering the map to know which plant we're looking for
