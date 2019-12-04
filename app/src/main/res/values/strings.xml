@@ -21,7 +21,7 @@
     <string name="mlkit_failed">Error: Sorry, the plant could not be identified! Try with another image.</string>
     <string name="title_activity_registraton">RegistratonActivity</string>
     <string name="main_report_a_plant">Report A Plant</string>
-    <string name="main_search_a_plant">Find A Plant</string>
+    <string name="main_search_a_plant">Search for Plants</string>
     <string name="main_description">Description</string>
     <string name="search_by_plant">Search By Plant!</string>
     <string name="search_by_location">Search By Location!</string>

@@ -22,7 +22,7 @@
         android:id="@+id/reportImageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="48dp"
         android:onClick="imageViewOnClick"
         android:src="@drawable/camera_bold"
         app:layout_constraintHorizontal_bias="0.498"
