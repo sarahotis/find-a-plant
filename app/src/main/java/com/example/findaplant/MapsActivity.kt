@@ -11,7 +11,9 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import androidx.core.content.ContextCompat
-
+import android.graphics.drawable.Drawable
+import android.view.Menu
+import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import java.io.ByteArrayOutputStream
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -33,6 +36,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var plantDesc : String
     private lateinit var latLng: LatLng
     private var imageURL: String? = null
+    private var toolbar: Toolbar? = null
+    private var drawable: Drawable? = null
     private var latitudeGeocode: Double = 0.0
     private var longitudeGeocode: Double = 0.0
 
@@ -41,6 +46,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.LENGTH_LONG).show();
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+        //toolbar for account icon
+        toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        drawable = ContextCompat.getDrawable(this, R.drawable.leaf_icon)
+        toolbar?.setNavigationIcon(drawable)
+        setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+
+        toolbar?.setNavigationOnClickListener {
+            startActivity(Intent(this@MapsActivity, MainActivity::class.java))
+        }
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -141,7 +159,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     MarkerOptions()
                                         .position(datLocation)
                                         .title(name.capitalizeWords())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                                 ) // can also use R.drawable.plant
                                 datMarker.tag = imageURL // Tag used to store image of plant on marker
                             }
@@ -152,7 +170,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 MarkerOptions()
                                     .position(datLocation)
                                     .title(name.capitalizeWords())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                             ) // can also use R.drawable.plant
                             datMarker.tag = imageURL // Tag used to store image of plant on marker
                         }
@@ -192,7 +210,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                         MarkerOptions()
                                             .position(datLocation)
                                             .title(name.capitalizeWords())
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                                     ) // can also use R.drawable.plant
                                 } else {
                                     datMarker = mMap.addMarker(
@@ -200,7 +218,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                             .position(datLocation)
                                             .title(name.capitalizeWords())
                                             .snippet(datDesc)
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                                     ) // can also use R.drawable.plant
                                 }
                                 //If its a plant report put marker on last entry
@@ -223,7 +241,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     MarkerOptions()
                                         .position(datLocation)
                                         .title(name.capitalizeWords())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                                 ) // can also use R.drawable.plant
                             } else {
                                 datMarker = mMap.addMarker(
@@ -231,7 +249,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                         .position(datLocation)
                                         .title(name.capitalizeWords())
                                         .snippet(datDesc)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                                 ) // can also use R.drawable.plant
                             }
                             //If its a plant report put marker on last entry
@@ -264,13 +282,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .position(latLng)
                     .title(plantName.capitalizeWords())
                     .snippet(plantDesc)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))) // can also use R.drawable.plant
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             } else {
                 val datMarker = mMap.addMarker(MarkerOptions()
                     .position(latLng)
                     .title(plantName.capitalizeWords())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))) // can also use R.drawable.plant
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
@@ -293,6 +311,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
             }
             startActivity(descriptionIntent)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(com.example.findaplant.R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_account -> {
+            startActivity(Intent(this@MapsActivity, ProfileActivity::class.java))
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
         }
     }
 

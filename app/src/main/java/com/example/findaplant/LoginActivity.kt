@@ -8,7 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-
+import android.widget.ImageView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
     private var loginBtn: Button? = null
     private var progressBar: ProgressBar? = null
     private var registerButton : Button? = null
-
+    private var plantIcon: ImageView? = null
     private var mAuth: FirebaseAuth? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +39,10 @@ class LoginActivity : AppCompatActivity() {
         registerButton?.setOnClickListener {
             val mainIntent = Intent(this, RegistrationActivity::class.java)
             startActivity(mainIntent)
+        }
+        plantIcon = findViewById(R.id.homeButton)
+        plantIcon?.setOnClickListener {
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
         }
     }
 
@@ -84,6 +88,7 @@ class LoginActivity : AppCompatActivity() {
         loginBtn = findViewById(R.id.login)
         progressBar = findViewById(R.id.progressBar)
     }
+
 
     companion object {
         val UserMail = "com.example.findaplant.UMail"

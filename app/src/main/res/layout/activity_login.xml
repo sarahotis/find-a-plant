@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:gravity="center_vertical"
-android:orientation="vertical"
-android:padding="16dp"
-tools:context=".LoginActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".LoginActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
         android:layout_marginBottom="60dp"
-        android:text="Log In to FindAPlant"
         android:fontFamily='sans-serif-condensed'
-        android:textSize="12pt"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text="Log into FindAPlant"
         android:textColor="#000000"
+        android:textSize="12pt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center"
-        app:layout_constraintVertical_bias="0.12">
-    </TextView>
+        app:layout_constraintVertical_bias="0.12"></TextView>
 
     <ImageView
-        android:layout_marginBottom="30dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/leaf"
+        android:id="@+id/homeButton"
+        android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_width="100dp"/>
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="30dp"
+        android:clickable="true"
+        android:src="@drawable/leaf" />
 
     <TextView
         android:id="@+id/textView"
@@ -40,37 +41,37 @@ tools:context=".LoginActivity">
         android:text="Account login" />
 
     <EditText
-    android:id="@+id/email"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="Email" />
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email" />
 
-<EditText
-    android:id="@+id/password"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="Password"
-    android:inputType="textPassword" />
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword" />
 
-<Button
-    android:id="@+id/login"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Login" />
+    <Button
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login" />
 
-<Button
-    android:id="@+id/registerButton"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="3dp"
-    android:background="@null"
-    android:forceDarkAllowed="false"
-    android:text="@string/register_instead"
-    android:textColor="@android:color/black" />
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:background="@null"
+        android:forceDarkAllowed="false"
+        android:text="@string/register_instead"
+        android:textColor="@android:color/black" />
 
-<ProgressBar
-    android:id="@+id/progressBar"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:visibility="gone" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 </LinearLayout>

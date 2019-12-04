@@ -5,11 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
-
+import android.widget.*
+import android.widget.ImageView
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -22,6 +19,7 @@ class RegistrationActivity : AppCompatActivity() {
     private var regBtn: Button? = null
     private var progressBar: ProgressBar? = null
     private var loginButton : Button? = null
+    private var plantIcon : ImageView? = null
 
     private var mAuth: FirebaseAuth? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +36,11 @@ class RegistrationActivity : AppCompatActivity() {
         loginButton?.setOnClickListener {
             val mainIntent = Intent(this, LoginActivity::class.java)
             startActivity(mainIntent)
+        }
+
+        plantIcon = findViewById(R.id.homeButton)
+        plantIcon?.setOnClickListener {
+            startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
         }
     }
 

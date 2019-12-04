@@ -13,12 +13,13 @@ import android.provider.MediaStore
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.net.Uri
 import android.provider.Settings
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -26,6 +27,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions
+import android.graphics.drawable.Drawable
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 
 class ReportPlantActivity : AppCompatActivity() {
 
@@ -38,6 +42,8 @@ class ReportPlantActivity : AppCompatActivity() {
     var reportLatitudeText : EditText? = null // Place to enter plant latitude if no location permission
     var reportLongitudeText : EditText? = null // Place to enter plant longitude if no location permission
     var imageTakenBool = false // Determines if plant picture was taken
+    private var toolbar: Toolbar? = null
+    private var drawable: Drawable? = null
     lateinit var imageTaken : Bitmap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -72,6 +78,8 @@ class ReportPlantActivity : AppCompatActivity() {
             )
         }
         setupViews()
+
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -269,6 +277,18 @@ class ReportPlantActivity : AppCompatActivity() {
 
     private fun setupViews() {
         setContentView(R.layout.report_plant_layout)
+
+        //toolbar for account icon
+        toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        drawable = ContextCompat.getDrawable(this, R.drawable.leaf_icon)
+        toolbar?.setNavigationIcon(drawable)
+        setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+
+        toolbar?.setNavigationOnClickListener {
+            startActivity(Intent(this@ReportPlantActivity, MainActivity::class.java))
+        }
+
         reportImageView = findViewById(R.id.reportImageView)
         helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
         reportPlantButton = findViewById(R.id.reportPlantButton)
@@ -282,6 +302,18 @@ class ReportPlantActivity : AppCompatActivity() {
 
     private fun setupNoLocationViews() {
         setContentView(R.layout.report_plant_manual_location)
+
+        //toolbar for account icon
+        toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        drawable = ContextCompat.getDrawable(this, R.drawable.leaf_icon)
+        toolbar?.setNavigationIcon(drawable)
+        setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+
+        toolbar?.setNavigationOnClickListener {
+            startActivity(Intent(this@ReportPlantActivity, MainActivity::class.java))
+        }
+
         reportImageView = findViewById(R.id.reportImageView)
         helpIdentifyButton = findViewById(R.id.helpIdentifyButton)
         reportPlantButton = findViewById(R.id.reportPlantButton)
@@ -299,6 +331,25 @@ class ReportPlantActivity : AppCompatActivity() {
         val errorToast = Toast.makeText(this, R.string.mlkit_failed, Toast.LENGTH_LONG)
         errorToast.setGravity(Gravity.CENTER, 0, 0)
         errorToast.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(com.example.findaplant.R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_account -> {
+            startActivity(Intent(this@ReportPlantActivity, ProfileActivity::class.java))
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
 
     companion object {
