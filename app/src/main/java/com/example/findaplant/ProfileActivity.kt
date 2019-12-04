@@ -1,6 +1,7 @@
 package com.example.findaplant
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -9,6 +10,10 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import java.sql.Timestamp
 import java.sql.Date
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+
+
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -19,11 +24,24 @@ class ProfileActivity : AppCompatActivity() {
     private var accountCreated : TextView? = null
     private var logOutButton: Button? = null
     private var logInButton: Button? = null
+    private var toolbar: Toolbar? = null
+    private var drawable: Drawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_profile)
+
+        toolbar = findViewById<Toolbar>(R.id.my_profile_toolbar)
+        drawable = ContextCompat.getDrawable(this, R.drawable.leaf_icon)
+        toolbar?.setNavigationIcon(drawable)
+        setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+
+        toolbar?.setNavigationOnClickListener {
+            startActivity(Intent(this@ProfileActivity, MainActivity::class.java))
+        }
+
         mAuth = FirebaseAuth.getInstance()
 
         userInfo = findViewById(R.id.user)
@@ -82,5 +100,24 @@ class ProfileActivity : AppCompatActivity() {
             Toast.LENGTH_LONG).show();
         startActivity(Intent( this@ProfileActivity, MainActivity::class.java))
     }
+
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        menuInflater.inflate(com.example.findaplant.R.menu.menu_profile, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+//        R.id.action_back -> {
+//            startActivity(Intent(this@ProfileActivity, MainActivity::class.java))
+//            true
+//        }
+//
+//        else -> {
+//            // If we got here, the user's action was not recognized.
+//            // Invoke the superclass to handle it.
+//            super.onOptionsItemSelected(item)
+//        }
+//    }
 }
 

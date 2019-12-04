@@ -9,6 +9,19 @@ android:background="#66EDD892">
 <!--    <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
 <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
 
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_profile_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <ImageView
         android:id="@+id/explorerImage"
         android:layout_width="264dp"

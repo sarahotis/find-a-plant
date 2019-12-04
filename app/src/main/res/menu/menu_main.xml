@@ -9,7 +9,6 @@ from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></
     <item
         android:id="@+id/action_account"
         android:icon="@drawable/account"
-        android:iconTint="#FFFFFF"
         android:title="@string/action_account"
         app:showAsAction="always" />
 

@@ -11,6 +11,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import android.view.MenuItem
 import android.view.Menu
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 
 
@@ -39,6 +40,8 @@ class MainActivity : AppCompatActivity() {
             ReportPlantActivity.animate(it)
             if (notLoggedIn()) {
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                Toast.makeText(this, "Log in to add to our growing database",
+                    Toast.LENGTH_LONG).show();
             } else {
                 startActivity(Intent(this@MainActivity, ReportPlantActivity::class.java))
             }
