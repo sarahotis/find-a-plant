@@ -24,7 +24,7 @@
     <string name="main_search_a_plant">Search for Plants</string>
     <string name="main_description">Description</string>
     <string name="search_by_plant">Search By Plant!</string>
-    <string name="search_by_location">Search By Location!</string>
+    <string name="find_locations">Find Locations!</string>
     <string name="back_to_map">Return to Map</string>
     <string name="back_to_main">Return to Home</string>
     <string name="search_report_another">Find Or Report Another Plant?</string>
@@ -40,5 +40,6 @@
     <string name="invalid_lat_and_long">Error: Invalid latitude and longitude values!</string>
     <string name="invalid_lat">Error: Invalid latitude value!</string>
     <string name="invalid_long">Error: Invalid longitude value!</string>
+    <string name="search_by_locations">Find Plants By Location</string>
 
 </resources>
