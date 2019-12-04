@@ -153,7 +153,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         val datMarker = mMap.addMarker(MarkerOptions()
                             .position(datLocation)
                             .title(name.capitalizeWords())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))) // can also use R.drawable.plant
                         datMarker.tag = imageURL // Tag used to store image of plant on marker
                     }
                 }
@@ -185,7 +185,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 MarkerOptions()
                                     .position(datLocation)
                                     .title(name.capitalizeWords())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                             ) // can also use R.drawable.plant
                         } else {
                             datMarker = mMap.addMarker(
@@ -193,7 +193,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     .position(datLocation)
                                     .title(name.capitalizeWords())
                                     .snippet(datDesc)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                             ) // can also use R.drawable.plant
                         }
                         //If its a plant report put marker on last entry
@@ -224,13 +224,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .position(latLng)
                     .title(plantName.capitalizeWords())
                     .snippet(plantDesc)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))) // can also use R.drawable.plant
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             } else {
                 val datMarker = mMap.addMarker(MarkerOptions()
                     .position(latLng)
                     .title(plantName.capitalizeWords())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.flower))) // can also use R.drawable.plant
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))) // can also use R.drawable.plant
                 datMarker.tag = imageURL // Tag used to store image of plant on marker
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, INITIAL_ZOOM_LEVEL))
