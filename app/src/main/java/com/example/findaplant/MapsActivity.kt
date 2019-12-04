@@ -42,7 +42,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var longitudeGeocode: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //TODO: Have a label on the plant made when entering the map to know which plant we're looking for
         Toast.makeText(this, "Loading map...",
             Toast.LENGTH_LONG).show();
         super.onCreate(savedInstanceState)
@@ -88,7 +87,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         Toast.makeText(this, "Click plant names for more info!",
             Toast.LENGTH_LONG).show();
-        Log.i(TAG, "Entered onMapReady")
         mMap = googleMap
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.isMyLocationEnabled = true // Blue dot representing user
@@ -100,9 +98,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val notAPlantReport = mapIntent.getBooleanExtra(DescriptionActivity.NOT_A_REPORT, false)
         val searchPlantsBasedOnLocation = mapIntent.getBooleanExtra(SearchActivity.SEARCH_FOR_PLANTS_BY_LOCATION, false)
-        /*** If it's not a plant report then no need to put plant info into User Plants database and
-         * we're not searching for a plant based on location.
-         */
+        /*** Check if its intent is from ReportPlantActivity or location is being searched. ***/
+        //It is a plant report, putting new plant in Firebase
         if(!notAPlantReport && !searchPlantsBasedOnLocation){
             // Get name, description, location, and image that user reported
             plantName = mapIntent.getStringExtra(ReportPlantActivity.PLANT_NAME_KEY).capitalizeWords()
@@ -123,27 +120,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             databaseUserPlants.child(timeStamp.toString()).child("image").setValue(imageEncoded)
             databaseUserPlants.child(timeStamp.toString()).child("description").setValue(plantDesc)
         } else {
-            //If searching for a plant
+            //Searching for the plants in the specified location
             if(searchPlantsBasedOnLocation){
-
                 //If searching for a plant by locations
-                //TODO: Default values are iffy. Change later
                 latitudeGeocode= mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, 0.0)
                 longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, 0.0)
-                Log.i(TAG, "Latitude from geocode is " + latitudeGeocode)
-                Log.i(TAG, "Longitude from geocode is " + longitudeGeocode)
             }else{
-
+                //Searching for a specific plant
                 plantName = mapIntent.getStringExtra(DescriptionActivity.PLANT_NAME_KEY).capitalizeWords()
                 plantDesc = mapIntent.getStringExtra(DescriptionActivity.PLANT_DESC_KEY)
                 val latitude = mapIntent.getDoubleExtra(DescriptionActivity.LATITUDE_KEY, DEFAULT_LAT)
                 val longitude = mapIntent.getDoubleExtra(DescriptionActivity.LONGITUDE_KEY, DEFAULT_LONG)
                 latLng = LatLng(latitude, longitude)
                 imageURL = mapIntent.getStringExtra(DescriptionActivity.IMAGE_KEY)
-
-
             }
-
         }
 
         /* Add all the plants in the Plants Added To FB database previously to the map */
@@ -207,6 +197,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     // Add plant marker to map
                     if (datLat != null && datLong != null && datDesc != null && datImage != null) {
+                        //Finding plants based on the searched location
                         if (searchPlantsBasedOnLocation) { // Only add marker within range
                             val latitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LATITUDE_FROM_GEOCODER, -0.0)
                             val longitudeGeocode = mapIntent.getDoubleExtra(SearchActivity.LONGITUDE_FROM_GEOCODER, -0.0)

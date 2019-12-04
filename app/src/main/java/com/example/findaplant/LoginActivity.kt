@@ -22,7 +22,6 @@ class LoginActivity : AppCompatActivity() {
     private var progressBar: ProgressBar? = null
     private var registerButton : Button? = null
     private var plantIcon: ImageView? = null
-
     private var mAuth: FirebaseAuth? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,9 +59,7 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Please enter password!", Toast.LENGTH_LONG).show()
             return
         }
-        //TODO: add firebase database of users - this will fail until then
-        // Retrieve UID for Current User if Login successful and store in intent, for the key UserID
-        // Start ReportPlantActivity if Registration Successful
+
         mAuth!!.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 progressBar!!.visibility = View.GONE
@@ -96,8 +93,6 @@ class LoginActivity : AppCompatActivity() {
     companion object {
         val UserMail = "com.example.findaplant.UMail"
         val UserID = "com.example.findaplant.UID"
-
-        //TODO: add firebase database of users
 
     }
 }
