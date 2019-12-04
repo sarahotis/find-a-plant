@@ -59,7 +59,7 @@ class DescriptionActivity : AppCompatActivity(){
             }
 
             val plantPicSource = plantIntent.getStringExtra(MapsActivity.IMAGE_KEY)
-            // kinda hacky but whatever atm
+            //Uploads plant picture if its a url
             if (plantPicSource.contains("https")) { // URL
                 Glide.with(this)
                     .load(plantPicSource)
