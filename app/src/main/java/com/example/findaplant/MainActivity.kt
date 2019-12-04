@@ -16,20 +16,12 @@ class MainActivity : AppCompatActivity() {
 
     private var mAuth: FirebaseAuth? = null
     internal var reportBtn: Button? = null
-//    internal var descriptionBtn: Button? = null
     internal var searchBtn: Button? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initializeViews()
-        Log.i(TAG, "In Main Activity")
-        //TODO: Have user enter a special userid
-        var user = mAuth!!.currentUser
-        if(user != null){
-            Log.i(TAG, "Current user is " + user.email)
-        }
-
 
         reportBtn!!.setOnClickListener {
             ReportPlantActivity.animate(it)
@@ -41,10 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-
         searchBtn!!.setOnClickListener {
-            Log.i("Search", "Search Activity Started")
             ReportPlantActivity.animate(it)
             startActivity(Intent(this@MainActivity, SearchActivity::class.java))
         }
@@ -61,7 +50,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun notLoggedIn(): Boolean {
         //check if current user is null
-        Log.i(TAG, "Current user is " + mAuth!!.currentUser)
         if(mAuth!!.currentUser == null){
             return true
         }

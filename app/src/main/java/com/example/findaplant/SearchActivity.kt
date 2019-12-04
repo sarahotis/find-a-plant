@@ -40,10 +40,6 @@ class SearchActivity : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance()
         databasePlantsByUser = database.getReference("User Plants")
         databasePlants = database.getReference("Plants Added To FB")
-        Log.i("Firebase", "Database Plants Added to FB referenced")
-
-
-
 
         //Go back to main button is clicked
         backToMainButton.setOnClickListener {
@@ -51,12 +47,11 @@ class SearchActivity : AppCompatActivity() {
             startActivity(mainActivityIntent)
         }
 
-        //TODO: Show a list of addresses and ask user to pick
         //Find locations of address input
         findLocations.setOnClickListener {
             var locationText = locationText.text.toString()
-            Log.i(TAG, "Location is " + locationText)
             if(locationText.isEmpty()){
+                //If location text is empty make Toast
                 Toast.makeText(applicationContext, "Please provide a location. ", Toast.LENGTH_SHORT).show()
             }else{
                 createAddressList(locationText)
@@ -69,7 +64,6 @@ class SearchActivity : AppCompatActivity() {
             ReportPlantActivity.animate(it)
             var plantToSearch = searchText!!.text.toString()
             plantToFind = plantToSearch
-            Log.i("SearchActivity", "Plant search " + plantToSearch)
 
             //Check if plant is null or empty
             if(plantToSearch == null || plantToSearch == ""){
@@ -112,7 +106,6 @@ class SearchActivity : AppCompatActivity() {
             val spinner = findViewById<Spinner>(R.id.address_spinner)
 
             var addressList = ArrayList<String>()
-            Log.i(TAG, "Array size is " + listAddress.size)
             addressList.add("No address")
             for(currLoc in listAddress){
                 val address = currLoc.getAddressLine(0)
@@ -127,7 +120,6 @@ class SearchActivity : AppCompatActivity() {
             spinner.adapter = adapter
 
             spinner.setOnTouchListener { v: View, _ ->
-                Log.i(TAG, "Touched is true")
                 wasTouched = true
                 v.performClick()
                 false
@@ -141,15 +133,12 @@ class SearchActivity : AppCompatActivity() {
                 ) {
                     if (wasTouched) {
                         if(pos > 0){
-                            Log.i(TAG, "Address is " + parent.getItemAtPosition(pos).toString())
                             Toast.makeText(applicationContext, "Address selected! ", Toast.LENGTH_SHORT)
                                 .show()
-                            Log.i(TAG, "pos is " + pos)
                             //Sets values
                             latitudeFromGeocoder = listAddress[pos - 1]!!.latitude
                             longitudeFromGeocoder = listAddress[pos - 1]!!.longitude
 
-                            Log.i(TAG, "Address is from list address " + listAddress[pos - 1].getAddressLine(0))
                         }else{
                             latitudeFromGeocoder = null
                             longitudeFromGeocoder = null
@@ -170,17 +159,14 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    //Search firebase for plant if found then start DescriptionActivity. Else make toast that plant
-    //isn't found
+    /***Search Firebase for plants that Users Inputed if found then start DescriptionActivity.
+     * Else make toast that plant isn't found ***/
     private fun searchUserInputs(){
-        Log.i(TAG, "search user inputs")
         databasePlantsByUser.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.i(TAG, "Searching through user inputs")
                 for (postSnapshot in dataSnapshot.children) {
 
                     val name = postSnapshot.child("common_name").value as? String
-                    Log.i(TAG, "name is " + name)
                     val description = postSnapshot.child("description").value as? String
                     if (name != null && name.isNotEmpty() && name.toLowerCase().compareTo(plantToFind.toLowerCase()) === 0) {
                         val longitude = postSnapshot.child("longitude").value as? Double
@@ -189,7 +175,6 @@ class SearchActivity : AppCompatActivity() {
 
                         //Null checks
                         if (longitude != null && latitude != null && imageURL != null && description != null) {
-                            Log.i("Search Activity", "We have a match! From User Input")
                             found = 1
                             //If match found then call method to start description intent
                             callDescriptionIntent(description, name, latitude, longitude, imageURL)
@@ -199,7 +184,6 @@ class SearchActivity : AppCompatActivity() {
                 }
                 if (found == 0) {
                     /*** If plant not found show Toast message ***/
-                    Log.i("Search Activity", "End of firebase loop")
                     Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -212,7 +196,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
 
-    //TODO: Have search look at user inputs and iNaturalist data
+    /*** Search plants that are from iNaturalist data ***/
     private fun searchPlantInputs(){
         Log.i("Search Activity", "Entered searchPlant function")
         databasePlants.addValueEventListener(object : ValueEventListener {
@@ -228,11 +212,9 @@ class SearchActivity : AppCompatActivity() {
                         //Null checks
                         if(longitude != null && latitude != null && imageURL != null && description != null){
                             //If match found then call method to start description intent
-                            Log.i("Search Activity", "We have a match! From iNaturalist" )
                             found = 1
                             callDescriptionIntent(description, name, latitude, longitude, imageURL)
                         }
-
                     }
                 }
             }
@@ -243,7 +225,7 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
-    //Method called to start description intent with given parameters
+    /***Method called to start description intent with given parameters***/
     private fun callDescriptionIntent(description : String, name : String, latitude : Double, longitude : Double,
                                       imageURL : String){
 
@@ -254,11 +236,11 @@ class SearchActivity : AppCompatActivity() {
         descriptionActivityIntent.putExtra(LATITUDE, latitude)
         descriptionActivityIntent.putExtra(LONGITUDE, longitude)
         descriptionActivityIntent.putExtra(IMAGE_KEY, imageURL)
-        Log.i(TAG, "Lat " + latitudeFromGeocoder + "Long " + longitudeFromGeocoder)
         startActivity(descriptionActivityIntent)
 
     }
 
+    /*** Initialize views of layout ***/
     private fun initializeViews() {
         searchText = findViewById(R.id.plant_search_text)
         searchPlantButton = findViewById(R.id.plant_search_button)

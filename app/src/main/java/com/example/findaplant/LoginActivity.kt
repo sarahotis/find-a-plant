@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -21,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private var userPassword: EditText? = null
     private var loginBtn: Button? = null
     private var progressBar: ProgressBar? = null
-    private var registerButton : Button? = null //TODO: eliminate code duplication
+    private var registerButton : Button? = null
 
     private var mAuth: FirebaseAuth? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,9 +55,7 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Please enter password!", Toast.LENGTH_LONG).show()
             return
         }
-        //TODO: add firebase database of users - this will fail until then
-        // Retrieve UID for Current User if Login successful and store in intent, for the key UserID
-        // Start ReportPlantActivity if Registration Successful
+
         mAuth!!.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 progressBar!!.visibility = View.GONE
@@ -91,8 +88,6 @@ class LoginActivity : AppCompatActivity() {
     companion object {
         val UserMail = "com.example.findaplant.UMail"
         val UserID = "com.example.findaplant.UID"
-
-        //TODO: add firebase database of users
 
     }
 }
