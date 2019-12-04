@@ -10,7 +10,9 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import androidx.core.content.ContextCompat
-
+import android.graphics.drawable.Drawable
+import android.view.Menu
+import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import java.io.ByteArrayOutputStream
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -32,6 +35,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var plantDesc : String
     private lateinit var latLng: LatLng
     private var imageURL: String? = null
+    private var toolbar: Toolbar? = null
+    private var drawable: Drawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //TODO: Have a label on the plant made when entering the map to know which plant we're looking for
@@ -39,6 +44,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.LENGTH_LONG).show();
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+        //toolbar for account icon
+        toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        drawable = ContextCompat.getDrawable(this, R.drawable.leaf_icon)
+        toolbar?.setNavigationIcon(drawable)
+        setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+
+        toolbar?.setNavigationOnClickListener {
+            startActivity(Intent(this@MapsActivity, MainActivity::class.java))
+        }
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -230,6 +248,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 descriptionIntent.putExtra(IMAGE_KEY, it.tag as String)
             }
             startActivity(descriptionIntent)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(com.example.findaplant.R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_account -> {
+            startActivity(Intent(this@MapsActivity, ProfileActivity::class.java))
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
         }
     }
 

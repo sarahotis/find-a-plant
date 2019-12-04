@@ -7,8 +7,13 @@ import android.util.Log
 import com.google.firebase.database.*
 import kotlin.collections.ArrayList
 import android.location.Geocoder
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import android.graphics.drawable.Drawable
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 
 
 class SearchActivity : AppCompatActivity() {
@@ -26,11 +31,24 @@ class SearchActivity : AppCompatActivity() {
     private var wasTouched : Boolean = false
     private var latitudeFromGeocoder: Double? = null
     private var longitudeFromGeocoder: Double? = null
-
+    private var toolbar: Toolbar? = null
+    private var drawable: Drawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_plant_layout)
+
+        //toolbar for account icon
+        toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        drawable = ContextCompat.getDrawable(this, R.drawable.leaf_icon)
+        toolbar?.setNavigationIcon(drawable)
+        setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+
+        toolbar?.setNavigationOnClickListener {
+            startActivity(Intent(this@SearchActivity, MainActivity::class.java))
+        }
+
         initializeViews()
         Log.i("SearchActivity", "OnCreate launched")
 
@@ -39,9 +57,6 @@ class SearchActivity : AppCompatActivity() {
         databasePlantsByUser = database.getReference("User Plants")
         databasePlants = database.getReference("Plants Added To FB")
         Log.i("Firebase", "Database Plants Added to FB referenced")
-
-
-
 
         //Go back to main button is clicked
         backToMainButton.setOnClickListener {
@@ -260,6 +275,25 @@ class SearchActivity : AppCompatActivity() {
         locationText = findViewById(R.id.location_search_text)
         searchLocationButton = findViewById(R.id.location_search_button)
         ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(com.example.findaplant.R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_account -> {
+            startActivity(Intent(this@SearchActivity, ProfileActivity::class.java))
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
 
     companion object{

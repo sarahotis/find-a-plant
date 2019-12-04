@@ -10,6 +10,7 @@ from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></
         android:id="@+id/action_account"
         android:icon="@drawable/account"
         android:title="@string/action_account"
+        android:tooltipText="My Account"
         app:showAsAction="always" />
 
 </menu>
