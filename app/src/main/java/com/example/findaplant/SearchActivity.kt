@@ -9,6 +9,7 @@ import kotlin.collections.ArrayList
 import android.location.Geocoder
 import android.view.View
 import android.widget.*
+import kotlinx.android.synthetic.main.activity_maps.*
 
 
 class SearchActivity : AppCompatActivity() {
@@ -18,7 +19,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var databasePlantsByUser: DatabaseReference
     private lateinit var searchPlantButton: Button
     private lateinit var backToMainButton: Button
-    private lateinit var searchLocationButton: Button
+    private lateinit var findLocations: Button
+    private lateinit var findPlantsByLocation: Button
     private lateinit var plantToFind: String
     private lateinit var locationText: EditText
     private var found: Int = 0
@@ -50,8 +52,8 @@ class SearchActivity : AppCompatActivity() {
         }
 
         //TODO: Show a list of addresses and ask user to pick
-        //Create an adapter containing a list of addresses
-        searchLocationButton.setOnClickListener {
+        //Find locations of address input
+        findLocations.setOnClickListener {
             var locationText = locationText.text.toString()
             Log.i(TAG, "Location is " + locationText)
             if(locationText.isEmpty()){
@@ -60,6 +62,7 @@ class SearchActivity : AppCompatActivity() {
                 createAddressList(locationText)
             }
         }
+
 
         //Set on click listener for Search Button
         searchPlantButton.setOnClickListener {
@@ -76,6 +79,21 @@ class SearchActivity : AppCompatActivity() {
                 //call searchPlant method
                 searchPlantInputs()
                 searchUserInputs()
+            }
+        }
+
+        //Find Plants By Location button is clicked
+        //If latitude and longitude are not null then go to Map Activity
+        //Else make a toast
+        findPlantsByLocation.setOnClickListener {
+            if(latitudeFromGeocoder != null && longitudeFromGeocoder != null){
+                val mapIntent = Intent(this, MapsActivity::class.java)
+                mapIntent.putExtra(LATITUDE_FROM_GEOCODER, latitudeFromGeocoder!!)
+                mapIntent.putExtra(LONGITUDE_FROM_GEOCODER, longitudeFromGeocoder!!)
+                mapIntent.putExtra(SEARCH_FOR_PLANTS_BY_LOCATION, true)
+                startActivity(mapIntent)
+            }else{
+                Toast.makeText(applicationContext, "Please provide a location. ", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -127,6 +145,7 @@ class SearchActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, "Address selected! ", Toast.LENGTH_SHORT)
                                 .show()
                             Log.i(TAG, "pos is " + pos)
+                            //Sets values
                             latitudeFromGeocoder = listAddress[pos - 1]!!.latitude
                             longitudeFromGeocoder = listAddress[pos - 1]!!.longitude
 
@@ -163,7 +182,7 @@ class SearchActivity : AppCompatActivity() {
                     val name = postSnapshot.child("common_name").value as? String
                     Log.i(TAG, "name is " + name)
                     val description = postSnapshot.child("description").value as? String
-                    if (name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0) {
+                    if (name != null && name.isNotEmpty() && name.toLowerCase().compareTo(plantToFind.toLowerCase()) === 0) {
                         val longitude = postSnapshot.child("longitude").value as? Double
                         val latitude = postSnapshot.child("latitude").value as? Double
                         val imageURL = postSnapshot.child("image").value as? String
@@ -175,25 +194,14 @@ class SearchActivity : AppCompatActivity() {
                             //If match found then call method to start description intent
                             callDescriptionIntent(description, name, latitude, longitude, imageURL)
                         }
-                        val name = postSnapshot.child("common_name").value as String
-                        val description = postSnapshot.child("description").value as String
-                        if (name.compareTo(plantToFind) == 0) {
-                            val longitude = postSnapshot.child("longitude").value as Double
-                            val latitude = postSnapshot.child("latitude").value as Double
-                            val imageURL = postSnapshot.child("image").value as String
-                            found = 1
-                            Log.i("Search Activity", "We have a match! From User Input")
-                            //If match found then call method to start description intent
-                            callDescriptionIntent(description, name, latitude, longitude, imageURL)
-                        }
                     }
 
-                    if (found == 0) {
-                        /*** If plant not found show Toast message ***/
-                        Log.i("Search Activity", "End of firebase loop")
-                        Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                }
+                if (found == 0) {
+                    /*** If plant not found show Toast message ***/
+                    Log.i("Search Activity", "End of firebase loop")
+                    Toast.makeText(applicationContext, "Plant not found.", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -212,7 +220,7 @@ class SearchActivity : AppCompatActivity() {
                 for(postSnapshot in dataSnapshot.children){
                     val name = postSnapshot.child("common_name").value as? String
                     val description = postSnapshot.child("description").value as? String
-                    if(name != null && name.isNotEmpty() && name.compareTo(plantToFind) === 0){
+                    if(name != null && name.isNotEmpty() && name.toLowerCase().compareTo(plantToFind.toLowerCase()) === 0){
                         val longitude = postSnapshot.child("longitude").value as? Double
                         val latitude = postSnapshot.child("latitude").value as? Double
                         val imageURL = postSnapshot.child("image_url").value as? String
@@ -247,8 +255,6 @@ class SearchActivity : AppCompatActivity() {
         descriptionActivityIntent.putExtra(LONGITUDE, longitude)
         descriptionActivityIntent.putExtra(IMAGE_KEY, imageURL)
         Log.i(TAG, "Lat " + latitudeFromGeocoder + "Long " + longitudeFromGeocoder)
-        descriptionActivityIntent.putExtra(LATITUDE_FROM_GEOCODER, latitudeFromGeocoder)
-        descriptionActivityIntent.putExtra(LONGITUDE_FROM_GEOCODER, longitudeFromGeocoder)
         startActivity(descriptionActivityIntent)
 
     }
@@ -258,7 +264,8 @@ class SearchActivity : AppCompatActivity() {
         searchPlantButton = findViewById(R.id.plant_search_button)
         backToMainButton = findViewById(R.id.backToMainButton)
         locationText = findViewById(R.id.location_search_text)
-        searchLocationButton = findViewById(R.id.location_search_button)
+        findLocations = findViewById(R.id.find_locations)
+        findPlantsByLocation = findViewById(R.id.search_by_location)
         ReportPlantActivity.setStrokes(searchPlantButton, ReportPlantActivity.LIGHT_ORANGE_COLOR)
     }
 
@@ -271,5 +278,6 @@ class SearchActivity : AppCompatActivity() {
         const val IMAGE_KEY = "IMAGE_KEY_FROM_SEARCH"
         const val LATITUDE_FROM_GEOCODER = "LATITUDE_FROM_SEARCH_FROM_GEOCODER"
         const val LONGITUDE_FROM_GEOCODER = "LONGITUDE_FROM_SEARCH_FROM_GEOCODER"
+        const val SEARCH_FOR_PLANTS_BY_LOCATION = "SEARCH_FOR_PLANTS_BY_LOCATION"
     }
 }
